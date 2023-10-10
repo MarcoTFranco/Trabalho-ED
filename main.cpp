@@ -179,3 +179,5 @@ int main()
 
 	return 0;
 }
+
+//GIT é muito complexo pro meu gosto!

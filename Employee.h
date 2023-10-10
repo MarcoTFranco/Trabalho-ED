@@ -16,8 +16,8 @@ private:
 public:
     Employee();
 
-    Employee(int dado0, char dado1[100], char dado2[100], char dado3[100], char dado4[100],
-             char dado5[100], char dado6[100], char dado7[100], char dado8[100], char dado9[100]);
+    Employee(int dado0, const char * dado1, const char * dado2, const char * dado3, const char * dado4,
+             const char * dado5, const char * dado6, const char * dado7, const char * dado8, const char * dado9);
 
     ~Employee();
 

@@ -21,6 +21,7 @@ void lerArquivoCSV()
 	char lat[100], lng[100], desc[100], zip[100], title[100],
 		timeStamp[100], twp[100], addr[100], e[100];
 
+	getline(arquivo, auxLinha);
 	while (getline(arquivo, auxLinha))
 	{
 		stringstream lendo(auxLinha);
@@ -60,9 +61,86 @@ void lerArquivoCSV()
 	gravaBinario.close();
 }
 
+void inserir()
+{
+	ofstream arquivo("call911_2_teste.bin", ios::binary | ios::app);
+	if (!arquivo)
+	{
+		cout << "Erro ao abrir o arquivo." << endl;
+	}
+
+	int id;
+	string lat, lng, desc, zip, title, timeStamp, twp, addr, e;
+
+	cout << "Digite o identificador do employee" << endl;
+	cin >> id;
+	cin.ignore();
+	cout << "Digite o lat do employee" << endl;
+	getline(cin, lat);
+	cout << "Digite o lng do employee" << endl;
+	getline(cin, lng);
+	cout << "Digite o desc do employee" << endl;
+	getline(cin, desc);
+	cout << "Digite o zip do employee" << endl;
+	getline(cin, zip);
+	cout << "Digite o title do employee" << endl;
+	getline(cin, title);
+	cout << "Digite o timeStamp do employee" << endl;
+	getline(cin, timeStamp);
+	cout << "Digite o twp do employee" << endl;
+	getline(cin, twp);
+	cout << "Digite o addr do employee" << endl;
+	getline(cin, addr);
+	cout << "Digite o e do employee" << endl;
+	getline(cin, e);
+
+	Employee employee(id, lat.c_str(), lng.c_str(), desc.c_str(), zip.c_str(), title.c_str(), timeStamp.c_str(), twp.c_str(), addr.c_str(), e.c_str());
+
+	arquivo.write(reinterpret_cast<char *>(&employee), sizeof(Employee));
+	arquivo.close();
+}
+
+void imprimirTrecho()
+{
+	int comeco, fim;
+
+	cout << "Digite o numero da linha inicial: ";
+	cin >> comeco;
+	cout << "Digite o numero da linha final: ";
+	cin >> fim;
+
+	ifstream arquivo("call911_2_teste.bin", ios::binary);
+	Employee employee;
+
+	int linha = 0;
+	arquivo.seekg(0, ios::beg);
+	while (arquivo.read((char *)&employee, sizeof(Employee)))
+	{
+		if (linha >= comeco and linha <= fim)
+		{
+			employee.imprimirInformacoes();
+		}
+		linha++;
+	}
+
+	arquivo.close();
+}
+
+void imprimeTudo()
+{
+	ifstream leitura1("call911_2_teste.bin", ios::binary);
+	Employee data;
+	leitura1.seekg(0, ios::beg);
+	while (leitura1.read(reinterpret_cast<char *>(&data), sizeof(Employee)))
+	{
+		data.imprimirInformacoes();
+	}
+	leitura1.close();
+}
+
 void menu_principal()
 {
-	int escolha, busca;
+	int escolha;
 	bool loop = true;
 	while (loop)
 	{
@@ -80,64 +158,11 @@ void menu_principal()
 		{
 		case 1:
 			cout << endl;
+			inserir();
 			break;
 		case 2:
 			cout << endl;
-			cout << "Escolha uma opcao:" << endl
-				 << "  1 - Buscar todos " << endl
-				 << "  2 - ID " << endl
-				 << "  3 - Nome " << endl
-				 << "  4 - Estilo " << endl
-				 << "  5 - Ano de Nascimento " << endl
-				 << "  6 - Busca por intervalo " << endl
-				 << "Digite sua escolha: ";
-			cin >> busca;
-			switch (busca)
-			{
-			case 1:
-				cout << endl;
-				cout << "Todos encontrados: " << endl;
-				cout << endl;
-				break;
-			case 2:
-				cout << endl;
-				cout << "Busca por ID: ";
-				cout << "Diga-me o ID que quer procurar?";
-				cout << endl
-					 << "--> ";
-				cout << endl;
-				break;
-			case 3:
-				cout << endl;
-				cout << "Busca por nome: " << endl;
-				cout << "Diga-me o nome que quer procurar?";
-				cout << endl
-					 << "--> ";
-				cout << endl;
-				break;
-			case 4:
-				cout << endl;
-				cout << "Busca por estilo musical: " << endl;
-				cout << "Diga-me o estilo do compositor que você deseja?";
-				cout << endl
-					 << "--> ";
-				cout << endl;
-				break;
-			case 5:
-				cout << endl;
-				cout << "Busca por ano de nascimento: " << endl;
-				cout << "Diga-me o ano de nascimento do compositor que você deseja?";
-				cout << endl
-					 << "--> ";
-				cout << endl;
-				break;
-			case 6:
-				cout << endl;
-				cout << "Busca por intervalo: " << endl;
-				cout << "Diga-me o inicio e o fim do interlavo que você deseja?";
-				cout << endl;
-				break;
-			}
+			imprimirTrecho();
 			break;
 		case 3:
 			cout << endl;
@@ -149,7 +174,7 @@ void menu_principal()
 			break;
 		case 5:
 			cout << endl;
-			cout << "Exportando..." << endl;
+			imprimeTudo();
 			break;
 		case 6:
 			cout << endl;
@@ -166,12 +191,15 @@ void menu_principal()
 
 int main()
 {
-	ifstream leitura ("call911_2_teste.csv");
- 
-    if (!leitura.is_open()){
-        cout <<"Erro ao abrir o arquivo." <<endl;
-        leitura.close();
-    } else{
+	ifstream leitura("call911_2_teste.csv");
+
+	if (!leitura.is_open())
+	{
+		cout << "Erro ao abrir o arquivo." << endl;
+		leitura.close();
+	}
+	else
+	{
 		lerArquivoCSV();
 	}
 
@@ -179,5 +207,3 @@ int main()
 
 	return 0;
 }
-
-//GIT é muito complexo pro meu gosto!

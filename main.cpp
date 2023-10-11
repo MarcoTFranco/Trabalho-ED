@@ -126,9 +126,9 @@ void trocarRegistros(string nomeDoArquivo)
 {
 	int posicao1, posicao2;
 
-	cout << "Digite a posição do primeiro registro: ";
+	cout << "Digite a posicao do primeiro registro: ";
 	cin >> posicao1;
-	cout << "Digite a posição do segundo registro: ";
+	cout << "Digite a posicao do segundo registro: ";
 	cin >> posicao2;
 
 	fstream arquivo(nomeDoArquivo, ios::binary | ios::in | ios::out);
@@ -264,7 +264,7 @@ void menu_principal(string nomeDoArquivo)
 			 << "  1 - Inserir" << endl
 			 << "  2 - Visualizar um trecho" << endl
 			 << "  3 - Trocar dois registros" << endl
-			 << "  4 - Alterar" << endl
+			 << "  4 - Editar dados" << endl
 			 << "  5 - Imprimir tudo" << endl
 			 << "  6 - Sair" << endl
 			 << "Digite sua escolha: ";

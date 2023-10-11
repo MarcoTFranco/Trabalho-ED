@@ -1,20 +1,54 @@
-# Trabalho-ED
-Projeto prático da disciplina de Estrutura de Dados.
-Nessa etapa são feitas apenas manipulação e inserção de dados no arquivo binário
-sendo controladas por meio de terminal.
-O objetivo dessa etapa do projeto é ler uma base de dados de um arquivo CSV(Excel) e 
-converte-lo para binário via código e realizar as manipulações e inserções de dados 
-diretamente no arquivo binário.
+# Trabalho de Estrutura de Dados
 
-O projeto deve ser executado via terminal e certificando-se que o terminal esteja na mesma 
-pasta que o código fonte e seus complementares, após isso, no terminal é necessário 
-digitar o nome do compilador, o arquivo principal e o arquivo complementar da classe.
+Este é o projeto prático da disciplina de Estrutura de Dados. Nesta etapa, focamos na manipulação e inserção de dados em um arquivo binário, controlados via terminal.
 
--------------------------------------------------------------------------------------------------
-Exemplo:
-C:\Users\Usuario\Documents\Programacao\Projeto_pratico_ed\Trabalho-ED> g++ main.cpp Employee.cpp
+## Objetivo
 
--------------------------------------------------------------------------------------------------
+O objetivo desta etapa do projeto é:
 
-Dessa maneira um executável será criado e é por ele que o programa pode ser acessado via terminal.
+- Ler uma base de dados de um arquivo CSV (Excel).
+- Converter os dados para um formato binário por meio do código.
+- Realizar manipulações e inserções diretamente no arquivo binário.
 
+## Instruções de Execução
+
+Para executar o projeto, siga estas etapas:
+
+1. Certifique-se de que o terminal esteja na mesma pasta que o código-fonte e seus complementos.
+
+2. Utilize o compilador C++, por exemplo, g++, com os arquivos principais e complementares da classe. 
+
+   **Exemplo:**
+
+   C:\caminho\para\seu\projeto> g++ main.cpp Employee.cpp
+
+3. Após esses passos será criado um aquivo "exemplo.exe" que poderá ser executado diretamente no terminal.
+
+## Pré-requisitos para um bom funcionamento
+
+- Ter um compilador de C++ instalado, por exemplo o g++.
+- Ter acesso aos arquivos de código-fonte.
+
+## Arquivos importantes
+
+O projeto possui os seguintes arquivos que são imprescindíveis para o seu funcionamento.
+
+- main.cpp
+- Employee.cpp
+- Employee.h
+
+## Changelog
+
+**Versão 0.0.1**
+- Primeira versão do projeto.
+- Nesta versão é possível:
+    - Converter um arquivo CSV para binário.
+    - Inserir dados.
+    - Editar dados.
+    - Trocar posições de dados
+    - Visualizar todos os dados
+
+## Contribuintes
+
+Pedro Henrique Souza Perazza Martins
+Marco Túlio Franco Silva

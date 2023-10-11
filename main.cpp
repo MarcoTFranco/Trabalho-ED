@@ -100,6 +100,43 @@ void inserir()
 	arquivo.close();
 }
 
+void trocarRegistros()
+{
+	int posicao1, posicao2;
+
+	cout << "Digite a posição do primeiro registro: ";
+	cin >> posicao1;
+	cout << "Digite a posição do segundo registro: ";
+	cin >> posicao2;
+
+	fstream arquivo("call911_2_teste.bin", ios::binary | ios::in | ios::out);
+
+	if (!arquivo)
+	{
+		cout << "Erro ao abrir o arquivo." << endl;
+		return;
+	}
+
+	Employee registro1, registro2;
+
+	// Ler o primeiro registro
+	arquivo.seekg(posicao1 * sizeof(Employee));
+	arquivo.read(reinterpret_cast<char *>(&registro1), sizeof(Employee));
+
+	// Ler o segundo registro
+	arquivo.seekg(posicao2 * sizeof(Employee));
+	arquivo.read(reinterpret_cast<char *>(&registro2), sizeof(Employee));
+
+	// Voltar para a posição do primeiro registro e escrever o segundo registro
+	arquivo.seekp(posicao1 * sizeof(Employee));
+	arquivo.write(reinterpret_cast<char *>(&registro2), sizeof(Employee));
+
+	// Voltar para a posição do segundo registro e escrever o primeiro registro
+	arquivo.seekp(posicao2 * sizeof(Employee));
+	arquivo.write(reinterpret_cast<char *>(&registro1), sizeof(Employee));
+
+	arquivo.close();
+}
 void imprimirTrecho()
 {
 	int comeco, fim;
@@ -148,8 +185,8 @@ void menu_principal()
 		cout << "Escolha uma opcao:" << endl
 			 << "  1 - Inserir" << endl
 			 << "  2 - Visualizar um trecho" << endl
-			 << "  3 - Alterar" << endl
-			 << "  4 - Trocar dois registros" << endl
+			 << "  3 - Trocar dois registros" << endl
+			 << "  4 - Alterar" << endl
 			 << "  5 - Imprimir tudo" << endl
 			 << "  6 - Sair" << endl
 			 << "Digite sua escolha: ";
@@ -166,11 +203,11 @@ void menu_principal()
 			break;
 		case 3:
 			cout << endl;
-			cout << "Insira o ID do compositor que deseja editar: ";
+			trocarRegistros();
 			break;
 		case 4:
 			cout << endl;
-			cout << "Coloque o ID do compositor que deseja excluir: ";
+			//Função
 			break;
 		case 5:
 			cout << endl;

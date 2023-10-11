@@ -16,5 +16,5 @@ C:\Users\Usuario\Documents\Programacao\Projeto_pratico_ed\Trabalho-ED> g++ main.
 
 -------------------------------------------------------------------------------------------------
 
-Dessa maneira um executável será criado e é por ele que o programa pode ser acessado.
+Dessa maneira um executável será criado e é por ele que o programa pode ser acessado via terminal.
 

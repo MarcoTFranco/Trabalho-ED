@@ -9,15 +9,16 @@
 
 using namespace std;
 
-
-string removerExtensaoDaPalavra(string palavra, string extensao) {
+string removerExtensaoDaPalavra(string palavra, string extensao)
+{
 	// Encontrando a posição do ponto antes da extensão
-    size_t pos = palavra.find(extensao);
+	size_t pos = palavra.find(extensao);
 
-    // Removendo a extensão .csv se encontrada
-    if (pos != string::npos) {
-        palavra = palavra.substr(0, pos);
-    }
+	// Removendo a extensão .csv se encontrada
+	if (pos != string::npos)
+	{
+		palavra = palavra.substr(0, pos);
+	}
 
 	return palavra;
 }
@@ -119,10 +120,12 @@ void inserir(string nomeDoArquivo)
 	Employee employee(id, lat.c_str(), lng.c_str(), desc.c_str(), zip.c_str(), title.c_str(), timeStamp.c_str(), twp.c_str(), addr.c_str(), e.c_str());
 
 	bool existe = false;
-	fstream arquivo1 (nomeDoArquivo, ios::binary | ios::in | ios::out);
+	fstream arquivo1(nomeDoArquivo, ios::binary | ios::in | ios::out);
 	Employee registro;
-	while (arquivo1.read((char *) &registro, sizeof(Employee))){
-		if(registro.getId() == id){
+	while (arquivo1.read((char *)&registro, sizeof(Employee)))
+	{
+		if (registro.getId() == id)
+		{
 			existe = true;
 		}
 	}
@@ -131,7 +134,9 @@ void inserir(string nomeDoArquivo)
 	if (existe)
 	{
 		cout << "O id ja existe." << endl;
-	} else {
+	}
+	else
+	{
 		arquivo.write(reinterpret_cast<char *>(&employee), sizeof(Employee));
 	}
 
@@ -201,53 +206,52 @@ void imprimirTrecho(string nomeDoArquivo)
 	arquivo.close();
 }
 
-void editar(string nomeDoArquivo) {
+void editar(string nomeDoArquivo)
+{
 	fstream arquivo(nomeDoArquivo, ios::binary | ios::in | ios::out);
-    if (!arquivo) {
-        cerr << "Erro ao abrir o arquivo." << endl;
-    }
+	if (!arquivo)
+	{
+		cerr << "Erro ao abrir o arquivo." << endl;
+	}
 
 	int id;
 	cout << "Digite o id do employee que deseja alterar: ";
 	cin >> id;
-	
 
-    Employee employee;
+	Employee employee;
 
 	char title[100], timeStamp[100];
 	string titleS, timeStampS;
 
-
-    while (arquivo.read(reinterpret_cast<char*>(&employee), sizeof(Employee))) {
-        if (employee.getId() == id) {
+	while (arquivo.read(reinterpret_cast<char *>(&employee), sizeof(Employee)))
+	{
+		if (employee.getId() == id)
+		{
 
 			cin.ignore();
-            cout << "Digite o novo title: ";
-            getline(cin, titleS);
-			
+			cout << "Digite o novo title: ";
+			getline(cin, titleS);
 
 			cout << "Digite o novo timeStamp (yy-mm-dd hh:mm:ss): ";
 			getline(cin, timeStampS);
-
 
 			assert(titleS.length() < sizeof(title));
 			strcpy(title, titleS.c_str());
 			assert(timeStampS.length() < sizeof(timeStamp));
 			strcpy(timeStamp, timeStampS.c_str());
-			
+
 			employee.setTitle(title);
 			employee.setTimeStamp(timeStamp);
 
-            int pos = arquivo.tellg();
-            arquivo.seekp(pos - sizeof(Employee));
-            arquivo.write(reinterpret_cast<char*>(&employee), sizeof(Employee));
-            cout << "Dados atualizados com sucesso." << endl;
-            employee.imprimirInformacoes();
-        }
-    }
+			int pos = arquivo.tellg();
+			arquivo.seekp(pos - sizeof(Employee));
+			arquivo.write(reinterpret_cast<char *>(&employee), sizeof(Employee));
+			cout << "Dados atualizados com sucesso." << endl;
+			employee.imprimirInformacoes();
+		}
+	}
 
-    arquivo.close();
-
+	arquivo.close();
 }
 
 void imprimeTudo(string nomeDoArquivo)

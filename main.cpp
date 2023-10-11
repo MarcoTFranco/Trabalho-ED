@@ -118,7 +118,23 @@ void inserir(string nomeDoArquivo)
 
 	Employee employee(id, lat.c_str(), lng.c_str(), desc.c_str(), zip.c_str(), title.c_str(), timeStamp.c_str(), twp.c_str(), addr.c_str(), e.c_str());
 
-	arquivo.write(reinterpret_cast<char *>(&employee), sizeof(Employee));
+	bool existe = false;
+	fstream arquivo1 (nomeDoArquivo, ios::binary | ios::in | ios::out);
+	Employee registro;
+	while (arquivo1.read((char *) &registro, sizeof(Employee))){
+		if(registro.getId() == id){
+			existe = true;
+		}
+	}
+	arquivo1.close();
+
+	if (existe)
+	{
+		cout << "O id ja existe." << endl;
+	} else {
+		arquivo.write(reinterpret_cast<char *>(&employee), sizeof(Employee));
+	}
+
 	arquivo.close();
 }
 
@@ -323,11 +339,11 @@ int main()
 	else
 	{
 		lerArquivoCSV(nomeDoArquivo);
+
+		string novoNome = removerExtensaoDaPalavra(nomeDoArquivo, ".csv") + ".bin";
+
+		menu_principal(novoNome);
 	}
-
-	string novoNome = removerExtensaoDaPalavra(nomeDoArquivo, ".csv") + ".bin";
-
-	menu_principal(novoNome);
 
 	return 0;
 }

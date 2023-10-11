@@ -9,16 +9,38 @@
 
 using namespace std;
 
-void lerArquivoCSV()
+
+string removerExtensaoDaPalavra(string palavra, string extensao) {
+	// Encontrando a posição do ponto antes da extensão
+    size_t pos = palavra.find(extensao);
+
+    // Removendo a extensão .csv se encontrada
+    if (pos != string::npos) {
+        palavra = palavra.substr(0, pos);
+    }
+
+	return palavra;
+}
+
+void lerArquivoCSV(string nomeDoArquivo)
 {
-	ifstream arquivo("call911_2_teste.csv");
-	ofstream gravaBinario("call911_2_teste.bin", ios::binary);
+	ifstream arquivo(nomeDoArquivo);
+
+	if (!arquivo.is_open())
+	{
+		cerr << "Erro ao abrir o arquivo." << endl;
+		arquivo.close();
+	}
+
+	nomeDoArquivo = removerExtensaoDaPalavra(nomeDoArquivo, ".csv");
+
+	ofstream gravaBinario(nomeDoArquivo + ".bin", ios::binary);
 	string auxLinha;
 	string auxColuna;
 	string campos[10];
 	Employee employee;
 	int id;
-	char lat[100], lng[100], desc[100], zip[100], title[100],
+	char lat[100], lng[100], desc[200], zip[100], title[100],
 		timeStamp[100], twp[100], addr[100], e[100];
 
 	getline(arquivo, auxLinha);
@@ -61,12 +83,12 @@ void lerArquivoCSV()
 	gravaBinario.close();
 }
 
-void inserir()
+void inserir(string nomeDoArquivo)
 {
-	ofstream arquivo("call911_2_teste.bin", ios::binary | ios::app);
+	ofstream arquivo(nomeDoArquivo, ios::binary | ios::app);
 	if (!arquivo)
 	{
-		cout << "Erro ao abrir o arquivo." << endl;
+		cerr << "Erro ao abrir o arquivo." << endl;
 	}
 
 	int id;
@@ -100,7 +122,7 @@ void inserir()
 	arquivo.close();
 }
 
-void trocarRegistros()
+void trocarRegistros(string nomeDoArquivo)
 {
 	int posicao1, posicao2;
 
@@ -109,12 +131,11 @@ void trocarRegistros()
 	cout << "Digite a posição do segundo registro: ";
 	cin >> posicao2;
 
-	fstream arquivo("call911_2_teste.bin", ios::binary | ios::in | ios::out);
+	fstream arquivo(nomeDoArquivo, ios::binary | ios::in | ios::out);
 
 	if (!arquivo)
 	{
-		cout << "Erro ao abrir o arquivo." << endl;
-		return;
+		cerr << "Erro ao abrir o arquivo." << endl;
 	}
 
 	Employee registro1, registro2;
@@ -137,7 +158,8 @@ void trocarRegistros()
 
 	arquivo.close();
 }
-void imprimirTrecho()
+
+void imprimirTrecho(string nomeDoArquivo)
 {
 	int comeco, fim;
 
@@ -146,7 +168,7 @@ void imprimirTrecho()
 	cout << "Digite o numero da linha final: ";
 	cin >> fim;
 
-	ifstream arquivo("call911_2_teste.bin", ios::binary);
+	ifstream arquivo(nomeDoArquivo, ios::binary);
 	Employee employee;
 
 	int linha = 0;
@@ -163,19 +185,75 @@ void imprimirTrecho()
 	arquivo.close();
 }
 
-void imprimeTudo()
+void editar(string nomeDoArquivo) {
+	fstream arquivo(nomeDoArquivo, ios::binary | ios::in | ios::out);
+    if (!arquivo) {
+        cerr << "Erro ao abrir o arquivo." << endl;
+    }
+
+	int id;
+	cout << "Digite o id do employee que deseja alterar: ";
+	cin >> id;
+	
+
+    Employee employee;
+
+	char title[100], timeStamp[100];
+	string titleS, timeStampS;
+
+
+    while (arquivo.read(reinterpret_cast<char*>(&employee), sizeof(Employee))) {
+        if (employee.getId() == id) {
+
+			cin.ignore();
+            cout << "Digite o novo title: ";
+            getline(cin, titleS);
+			
+
+			cout << "Digite o novo timeStamp (yy-mm-dd hh:mm:ss): ";
+			getline(cin, timeStampS);
+
+
+			assert(titleS.length() < sizeof(title));
+			strcpy(title, titleS.c_str());
+			assert(timeStampS.length() < sizeof(timeStamp));
+			strcpy(timeStamp, timeStampS.c_str());
+			
+			employee.setTitle(title);
+			employee.setTimeStamp(timeStamp);
+
+            int pos = arquivo.tellg();
+            arquivo.seekp(pos - sizeof(Employee));
+            arquivo.write(reinterpret_cast<char*>(&employee), sizeof(Employee));
+            cout << "Dados atualizados com sucesso." << endl;
+            employee.imprimirInformacoes();
+        }
+    }
+
+    arquivo.close();
+
+}
+
+void imprimeTudo(string nomeDoArquivo)
 {
-	ifstream leitura1("call911_2_teste.bin", ios::binary);
+	ifstream leitura(nomeDoArquivo, ios::binary);
+
+	if (!leitura.is_open())
+	{
+		cerr << "Erro ao abrir o arquivo." << endl;
+		leitura.close();
+	}
+
 	Employee data;
-	leitura1.seekg(0, ios::beg);
-	while (leitura1.read(reinterpret_cast<char *>(&data), sizeof(Employee)))
+	leitura.seekg(0, ios::beg);
+	while (leitura.read(reinterpret_cast<char *>(&data), sizeof(Employee)))
 	{
 		data.imprimirInformacoes();
 	}
-	leitura1.close();
+	leitura.close();
 }
 
-void menu_principal()
+void menu_principal(string nomeDoArquivo)
 {
 	int escolha;
 	bool loop = true;
@@ -195,23 +273,23 @@ void menu_principal()
 		{
 		case 1:
 			cout << endl;
-			inserir();
+			inserir(nomeDoArquivo);
 			break;
 		case 2:
 			cout << endl;
-			imprimirTrecho();
+			imprimirTrecho(nomeDoArquivo);
 			break;
 		case 3:
 			cout << endl;
-			trocarRegistros();
+			trocarRegistros(nomeDoArquivo);
 			break;
 		case 4:
 			cout << endl;
-			//Função
+			editar(nomeDoArquivo);
 			break;
 		case 5:
 			cout << endl;
-			imprimeTudo();
+			imprimeTudo(nomeDoArquivo);
 			break;
 		case 6:
 			cout << endl;
@@ -228,7 +306,14 @@ void menu_principal()
 
 int main()
 {
-	ifstream leitura("call911_2_teste.csv");
+
+	string nomeDoArquivo;
+
+	cout << "Digite o nome do arquivo: ";
+	cin >> nomeDoArquivo;
+	cout << endl;
+
+	ifstream leitura(nomeDoArquivo);
 
 	if (!leitura.is_open())
 	{
@@ -237,10 +322,12 @@ int main()
 	}
 	else
 	{
-		lerArquivoCSV();
+		lerArquivoCSV(nomeDoArquivo);
 	}
 
-	menu_principal();
+	string novoNome = removerExtensaoDaPalavra(nomeDoArquivo, ".csv") + ".bin";
+
+	menu_principal(novoNome);
 
 	return 0;
 }

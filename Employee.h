@@ -10,7 +10,7 @@ class Employee
 {
 private:
     int id;
-    char lat[100], lng[100], desc[100], zip[100], title[100],
+    char lat[100], lng[100], desc[200], zip[100], title[100],
         timeStamp[100], twp[100], addr[100], e[100];
 
 public:
@@ -20,6 +20,12 @@ public:
              const char * dado5, const char * dado6, const char * dado7, const char * dado8, const char * dado9);
 
     ~Employee();
+
+    int getId();
+    
+    void setTitle(const char * dado);
+
+    void setTimeStamp(const char * dado);
 
     void imprimirInformacoes();
 };

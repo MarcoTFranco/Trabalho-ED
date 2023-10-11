@@ -35,6 +35,20 @@ Employee::Employee(){};
 
 Employee::~Employee(){};
 
+int Employee::getId() { 
+    return id; 
+}
+
+void Employee::setTitle(const char * dado) {
+    assert(strlen(dado) < sizeof(title));
+    strcpy(title, dado);
+}
+
+void Employee::setTimeStamp(const char * dado) {
+    assert(strlen(dado) < sizeof(timeStamp));
+    strcpy(timeStamp, dado);
+}
+
 void Employee::imprimirInformacoes()
 {
     cout << "id: " << id << endl;

@@ -16,16 +16,16 @@ private:
 public:
     Employee();
 
-    Employee(int dado0, const char * dado1, const char * dado2, const char * dado3, const char * dado4,
-             const char * dado5, const char * dado6, const char * dado7, const char * dado8, const char * dado9);
+    Employee(int dado0, const char *dado1, const char *dado2, const char *dado3, const char *dado4,
+             const char *dado5, const char *dado6, const char *dado7, const char *dado8, const char *dado9);
 
     ~Employee();
 
     int getId();
-    
-    void setTitle(const char * dado);
 
-    void setTimeStamp(const char * dado);
+    void setTitle(const char *dado);
+
+    void setTimeStamp(const char *dado);
 
     void imprimirInformacoes();
 };

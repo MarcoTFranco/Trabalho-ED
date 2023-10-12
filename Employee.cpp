@@ -7,8 +7,8 @@
 
 using namespace std;
 
-Employee::Employee(int dado0, const char * dado1, const char * dado2, const char * dado3, const char * dado4,
-                   const char * dado5, const char * dado6, const char * dado7, const char * dado8, const char * dado9)
+Employee::Employee(int dado0, const char *dado1, const char *dado2, const char *dado3, const char *dado4,
+                   const char *dado5, const char *dado6, const char *dado7, const char *dado8, const char *dado9)
 {
     id = dado0;
     assert(strlen(dado1) < sizeof(lat));
@@ -35,16 +35,19 @@ Employee::Employee(){};
 
 Employee::~Employee(){};
 
-int Employee::getId() { 
-    return id; 
+int Employee::getId()
+{
+    return id;
 }
 
-void Employee::setTitle(const char * dado) {
+void Employee::setTitle(const char *dado)
+{
     assert(strlen(dado) < sizeof(title));
     strcpy(title, dado);
 }
 
-void Employee::setTimeStamp(const char * dado) {
+void Employee::setTimeStamp(const char *dado)
+{
     assert(strlen(dado) < sizeof(timeStamp));
     strcpy(timeStamp, dado);
 }

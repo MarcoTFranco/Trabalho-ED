@@ -95,45 +95,45 @@ void inserir(string nomeDoArquivo)
 	int id;
 	string lat, lng, desc, zip, title, timeStamp, twp, addr, e;
 
-	cout << "Digite o identificador do employee" << endl;
+	cout << "Digite o identificador do employee: ";
 	cin >> id;
 	cin.ignore();
-	cout << "Digite o lat do employee" << endl;
+	cout << "Digite o lat do employee: ";
 	getline(cin, lat);
-	cout << "Digite o lng do employee" << endl;
+	cout << "Digite o lng do employee: ";
 	getline(cin, lng);
-	cout << "Digite o desc do employee" << endl;
+	cout << "Digite o desc do employee: ";
 	getline(cin, desc);
-	cout << "Digite o zip do employee" << endl;
+	cout << "Digite o zip do employee: ";
 	getline(cin, zip);
-	cout << "Digite o title do employee" << endl;
+	cout << "Digite o title do employee: ";
 	getline(cin, title);
-	cout << "Digite o timeStamp do employee" << endl;
+	cout << "Digite o timeStamp do employee: ";
 	getline(cin, timeStamp);
-	cout << "Digite o twp do employee" << endl;
+	cout << "Digite o twp do employee: ";
 	getline(cin, twp);
-	cout << "Digite o addr do employee" << endl;
+	cout << "Digite o addr do employee: ";
 	getline(cin, addr);
-	cout << "Digite o e do employee" << endl;
+	cout << "Digite o e do employee: ";
 	getline(cin, e);
 
 	Employee employee(id, lat.c_str(), lng.c_str(), desc.c_str(), zip.c_str(), title.c_str(), timeStamp.c_str(), twp.c_str(), addr.c_str(), e.c_str());
 
 	bool existe = false;
-	fstream arquivo1(nomeDoArquivo, ios::binary | ios::in | ios::out);
-	Employee registro;
-	while (arquivo1.read((char *)&registro, sizeof(Employee)))
+	ifstream leitura(nomeDoArquivo, ios::binary);
+	Employee aux;
+	while (leitura.read((char *)&aux, sizeof(Employee)))
 	{
-		if (registro.getId() == id)
+		if (aux.getId() == id)
 		{
 			existe = true;
 		}
 	}
-	arquivo1.close();
+	leitura.close();
 
 	if (existe)
 	{
-		cout << "O id ja existe." << endl;
+		cout << "O id ja existe!" << endl;
 	}
 	else
 	{

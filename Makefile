@@ -1,5 +1,5 @@
 #Makefile utilizado para otimizar a compilacao do projeto
-#Copyright 2020 by Marco Tulio Franco Silva
+#Copyright 2023 by Marco Tulio Franco Silva
 #				   Pedro Henrique Souza Perazza Martins
 
 
@@ -16,14 +16,14 @@ all: executavel
 executavel: main.o Employee.o
 	$(CC) main.o Employee.o -o executavel
 
-#compila main.cpp
+#Compila main.cpp
 main.o: main.cpp
 	$(CC) $(CFLAGS) main.cpp
 
-#compila Employee.cpp
+#Compila Employee.cpp
 Bmais.o: Employee.cpp
 	$(CC) $(CFLAGS) Employee.cpp
 
-#remove todos os arquivos compilados (objetos) e o executavel (executavel do projeto)
+#Remove todos os arquivos compilados (objetos) e o executavel (executavel do projeto)
 clear:
 	rm -rf *.o executavel

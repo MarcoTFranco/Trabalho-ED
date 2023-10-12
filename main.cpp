@@ -11,10 +11,8 @@ using namespace std;
 
 string removerExtensaoDaPalavra(string palavra, string extensao)
 {
-	// Encontrando a posição do ponto antes da extensão
 	size_t pos = palavra.find(extensao);
 
-	// Removendo a extensão .csv se encontrada
 	if (pos != string::npos)
 	{
 		palavra = palavra.substr(0, pos);
@@ -161,19 +159,15 @@ void trocarRegistros(string nomeDoArquivo)
 
 	Employee registro1, registro2;
 
-	// Ler o primeiro registro
 	arquivo.seekg(posicao1 * sizeof(Employee));
 	arquivo.read(reinterpret_cast<char *>(&registro1), sizeof(Employee));
 
-	// Ler o segundo registro
 	arquivo.seekg(posicao2 * sizeof(Employee));
 	arquivo.read(reinterpret_cast<char *>(&registro2), sizeof(Employee));
 
-	// Voltar para a posição do primeiro registro e escrever o segundo registro
 	arquivo.seekp(posicao1 * sizeof(Employee));
 	arquivo.write(reinterpret_cast<char *>(&registro2), sizeof(Employee));
 
-	// Voltar para a posição do segundo registro e escrever o primeiro registro
 	arquivo.seekp(posicao2 * sizeof(Employee));
 	arquivo.write(reinterpret_cast<char *>(&registro1), sizeof(Employee));
 
@@ -314,7 +308,7 @@ void menu_principal(string nomeDoArquivo)
 		case 6:
 			cout << endl;
 			cout << "Saindo..." << endl;
-			loop = false; // Definir ward como false para sair do loop
+			loop = false;
 			break;
 
 		default:

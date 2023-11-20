@@ -1,3 +1,11 @@
+/*
+ *
+ * Participantes do grupo:
+ * Marco Túlio Franco Silva
+ * Pedro Henrique Souza Perazza Martins
+ *
+ */
+
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -9,6 +17,7 @@
 
 using namespace std;
 
+// Metodo para remover extensao de uma palavra
 string removerExtensaoDaPalavra(string palavra, string extensao)
 {
 	size_t pos = palavra.find(extensao);
@@ -21,14 +30,30 @@ string removerExtensaoDaPalavra(string palavra, string extensao)
 	return palavra;
 }
 
+// Metodo para verificar se um id existe no arquivo binario
+bool existeId(string nomeDoArquivo, int id)
+{
+	ifstream leitura(nomeDoArquivo, ios::binary);
+	Employee aux;
+	while (leitura.read((char *)&aux, sizeof(Employee)))
+	{
+		if (aux.getId() == id)
+		{
+			return true;
+		}
+	}
+	leitura.close();
+	return false;
+}
+
+// Metodo para ler um arquivo CSV e gravar em um arquivo binario
 void lerArquivoCSV(string nomeDoArquivo)
 {
 	ifstream arquivo(nomeDoArquivo);
 
 	if (!arquivo.is_open())
 	{
-		cerr << "Erro ao abrir o arquivo." << endl;
-		arquivo.close();
+		throw runtime_error("Erro ao abrir o arquivo.");
 	}
 
 	nomeDoArquivo = removerExtensaoDaPalavra(nomeDoArquivo, ".csv");
@@ -82,12 +107,13 @@ void lerArquivoCSV(string nomeDoArquivo)
 	gravaBinario.close();
 }
 
+// Metodo para inserir um novo registro no arquivo binario
 void inserir(string nomeDoArquivo)
 {
 	ofstream arquivo(nomeDoArquivo, ios::binary | ios::app);
 	if (!arquivo)
 	{
-		cerr << "Erro ao abrir o arquivo." << endl;
+		throw runtime_error("Erro ao abrir o arquivo.");
 	}
 
 	int id;
@@ -117,18 +143,7 @@ void inserir(string nomeDoArquivo)
 
 	Employee employee(id, lat.c_str(), lng.c_str(), desc.c_str(), zip.c_str(), title.c_str(), timeStamp.c_str(), twp.c_str(), addr.c_str(), e.c_str());
 
-	bool existe = false;
-	ifstream leitura(nomeDoArquivo, ios::binary);
-	Employee aux;
-	while (leitura.read((char *)&aux, sizeof(Employee)))
-	{
-		if (aux.getId() == id)
-		{
-			existe = true;
-		}
-	}
-	leitura.close();
-
+	bool existe = existeId(nomeDoArquivo, id);
 	if (existe)
 	{
 		cout << "O id ja existe!" << endl;
@@ -141,21 +156,97 @@ void inserir(string nomeDoArquivo)
 	arquivo.close();
 }
 
+// Metodo para inserir um novo registro em uma determinada posição mandando todos os outros para baixo
+void inserirNaPosicao(string nomeDoArquivo)
+{
+	fstream arquivo(nomeDoArquivo, ios::binary | ios::in | ios::out);
+
+	if (!arquivo)
+	{
+		throw runtime_error("Erro ao abrir o arquivo.");
+	}
+
+	int posicao;
+
+	cout << "Digite a posicao onde deseja inserir o novo registro: ";
+	cin >> posicao;
+
+	// Verificar se a posição é válida
+	arquivo.seekg(0, ios::end);
+	int numRegistros = arquivo.tellg() / sizeof(Employee);
+	if (posicao < 0 || posicao > numRegistros)
+	{
+		cerr << "Posicao invalida!" << endl;
+		arquivo.close();
+	}
+
+	// Ler o registro existente na posição especificada
+	Employee registroExistente;
+	arquivo.seekg(posicao * sizeof(Employee));
+	arquivo.read(reinterpret_cast<char *>(&registroExistente), sizeof(Employee));
+
+	int id;
+	string lat, lng, desc, zip, title, timeStamp, twp, addr, e;
+
+	cout << "Digite o identificador do employee: ";
+	cin >> id;
+	cin.ignore();
+	cout << "Digite o lat do employee: ";
+	getline(cin, lat);
+	cout << "Digite o lng do employee: ";
+	getline(cin, lng);
+	cout << "Digite o desc do employee: ";
+	getline(cin, desc);
+	cout << "Digite o zip do employee: ";
+	getline(cin, zip);
+	cout << "Digite o title do employee: ";
+	getline(cin, title);
+	cout << "Digite o timeStamp do employee: ";
+	getline(cin, timeStamp);
+	cout << "Digite o twp do employee: ";
+	getline(cin, twp);
+	cout << "Digite o addr do employee: ";
+	getline(cin, addr);
+	cout << "Digite o e do employee: ";
+	getline(cin, e);
+
+	Employee novoRegistro(id, lat.c_str(), lng.c_str(), desc.c_str(), zip.c_str(), title.c_str(), timeStamp.c_str(), twp.c_str(), addr.c_str(), e.c_str());
+
+	// Deslocar os registros restantes para baixo
+	for (int i = numRegistros - 1; i >= posicao; i--)
+	{
+		Employee registroAnterior;
+		arquivo.seekg(i * sizeof(Employee));
+		arquivo.read(reinterpret_cast<char *>(&registroAnterior), sizeof(Employee));
+
+		arquivo.seekp((i + 1) * sizeof(Employee));
+		arquivo.write(reinterpret_cast<char *>(&registroAnterior), sizeof(Employee));
+	}
+
+	// Escrever o novo registro na posição especificada
+	arquivo.seekp(posicao * sizeof(Employee));
+	arquivo.write(reinterpret_cast<char *>(&novoRegistro), sizeof(Employee));
+
+	arquivo.close();
+}
+
+// Metodo para trocar dois registros de posicao
 void trocarRegistros(string nomeDoArquivo)
 {
+
+	fstream arquivo(nomeDoArquivo, ios::binary | ios::in | ios::out);
+
+	if (!arquivo)
+	{
+		throw runtime_error("Erro ao abrir o arquivo.");
+	}
+
 	int posicao1, posicao2;
 
 	cout << "Digite a posicao do primeiro registro: ";
 	cin >> posicao1;
 	cout << "Digite a posicao do segundo registro: ";
 	cin >> posicao2;
-
-	fstream arquivo(nomeDoArquivo, ios::binary | ios::in | ios::out);
-
-	if (!arquivo)
-	{
-		cerr << "Erro ao abrir o arquivo." << endl;
-	}
 
 	Employee registro1, registro2;
 
@@ -174,8 +265,17 @@ void trocarRegistros(string nomeDoArquivo)
 	arquivo.close();
 }
 
+// Metodo para imprimir um trecho do arquivo binario
 void imprimirTrecho(string nomeDoArquivo)
 {
+
+	ifstream arquivo(nomeDoArquivo, ios::binary);
+
+	if (!arquivo)
+	{
+		throw runtime_error("Erro ao abrir o arquivo.");
+	}
+
 	int comeco, fim;
 
 	cout << "Digite o numero da linha inicial: ";
@@ -183,7 +283,6 @@ void imprimirTrecho(string nomeDoArquivo)
 	cout << "Digite o numero da linha final: ";
 	cin >> fim;
 
-	ifstream arquivo(nomeDoArquivo, ios::binary);
 	Employee employee;
 
 	int linha = 0;
@@ -200,12 +299,13 @@ void imprimirTrecho(string nomeDoArquivo)
 	arquivo.close();
 }
 
+// Metodo para editar um registro
 void editar(string nomeDoArquivo)
 {
 	fstream arquivo(nomeDoArquivo, ios::binary | ios::in | ios::out);
 	if (!arquivo)
 	{
-		cerr << "Erro ao abrir o arquivo." << endl;
+		throw runtime_error("Erro ao abrir o arquivo.");
 	}
 
 	int id;
@@ -248,14 +348,14 @@ void editar(string nomeDoArquivo)
 	arquivo.close();
 }
 
+// Metodo para imprimir todos os registros do arquivo binario
 void imprimeTudo(string nomeDoArquivo)
 {
 	ifstream leitura(nomeDoArquivo, ios::binary);
 
 	if (!leitura.is_open())
 	{
-		cerr << "Erro ao abrir o arquivo." << endl;
-		leitura.close();
+		throw runtime_error("Erro ao abrir o arquivo.");
 	}
 
 	Employee data;
@@ -267,7 +367,8 @@ void imprimeTudo(string nomeDoArquivo)
 	leitura.close();
 }
 
-void menu_principal(string nomeDoArquivo)
+// Metodo para imprimir o menu principal
+void menuPrincipal(string nomeDoArquivo)
 {
 	int escolha;
 	bool loop = true;
@@ -276,11 +377,12 @@ void menu_principal(string nomeDoArquivo)
 		cout << endl;
 		cout << "Escolha uma opcao:" << endl
 			 << "  1 - Inserir" << endl
-			 << "  2 - Visualizar um trecho" << endl
-			 << "  3 - Trocar dois registros" << endl
-			 << "  4 - Editar dados" << endl
-			 << "  5 - Imprimir tudo" << endl
-			 << "  6 - Sair" << endl
+			 << "  2 - Inserir na posição" << endl
+			 << "  3 - Visualizar um trecho" << endl
+			 << "  4 - Trocar dois registros" << endl
+			 << "  5 - Editar dados" << endl
+			 << "  6 - Imprimir tudo" << endl
+			 << "  7 - Sair" << endl
 			 << "Digite sua escolha: ";
 		cin >> escolha;
 		switch (escolha)
@@ -291,21 +393,25 @@ void menu_principal(string nomeDoArquivo)
 			break;
 		case 2:
 			cout << endl;
-			imprimirTrecho(nomeDoArquivo);
+			inserirNaPosicao(nomeDoArquivo);
 			break;
 		case 3:
 			cout << endl;
-			trocarRegistros(nomeDoArquivo);
+			imprimirTrecho(nomeDoArquivo);
 			break;
 		case 4:
 			cout << endl;
-			editar(nomeDoArquivo);
+			trocarRegistros(nomeDoArquivo);
 			break;
 		case 5:
 			cout << endl;
-			imprimeTudo(nomeDoArquivo);
+			editar(nomeDoArquivo);
 			break;
 		case 6:
+			cout << endl;
+			imprimeTudo(nomeDoArquivo);
+			break;
+		case 7:
 			cout << endl;
 			cout << "Saindo..." << endl;
 			loop = false;
@@ -331,8 +437,7 @@ int main()
 
 	if (!leitura.is_open())
 	{
-		cout << "Erro ao abrir o arquivo." << endl;
-		leitura.close();
+		throw runtime_error("Erro ao abrir o arquivo.");
 	}
 	else
 	{
@@ -340,7 +445,7 @@ int main()
 
 		string novoNome = removerExtensaoDaPalavra(nomeDoArquivo, ".csv") + ".bin";
 
-		menu_principal(novoNome);
+		menuPrincipal(novoNome);
 	}
 
 	return 0;

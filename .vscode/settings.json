@@ -6,6 +6,7 @@
         "iostream": "cpp",
         "fstream": "cpp",
         "array": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "stdexcept": "cpp"
     }
 }

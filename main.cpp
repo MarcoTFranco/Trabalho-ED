@@ -17,7 +17,7 @@
 
 using namespace std;
 
-// Metodo para remover extensao de uma palavra
+// Função para remover extensao de uma palavra
 string removerExtensaoDaPalavra(string palavra, string extensao)
 {
 	size_t pos = palavra.find(extensao);
@@ -30,7 +30,7 @@ string removerExtensaoDaPalavra(string palavra, string extensao)
 	return palavra;
 }
 
-// Metodo para verificar se um id existe no arquivo binario
+// Função para verificar se um id existe no arquivo binario
 bool existeId(string nomeDoArquivo, int id)
 {
 	ifstream leitura(nomeDoArquivo, ios::binary);
@@ -46,7 +46,7 @@ bool existeId(string nomeDoArquivo, int id)
 	return false;
 }
 
-// Metodo para ler um arquivo CSV e gravar em um arquivo binario
+// Função para ler um arquivo CSV e gravar em um arquivo binario
 void lerArquivoCSV(string nomeDoArquivo)
 {
 	ifstream arquivo(nomeDoArquivo);
@@ -107,7 +107,7 @@ void lerArquivoCSV(string nomeDoArquivo)
 	gravaBinario.close();
 }
 
-// Metodo para inserir um novo registro no arquivo binario
+// Função para inserir um novo registro no arquivo binario
 void inserir(string nomeDoArquivo)
 {
 	ofstream arquivo(nomeDoArquivo, ios::binary | ios::app);
@@ -156,7 +156,7 @@ void inserir(string nomeDoArquivo)
 	arquivo.close();
 }
 
-// Metodo para inserir um novo registro em uma determinada posição mandando todos os outros para baixo
+// Função para inserir um novo registro em uma determinada posição, mandando todos os outros para baixo
 void inserirNaPosicao(string nomeDoArquivo)
 {
 	fstream arquivo(nomeDoArquivo, ios::binary | ios::in | ios::out);
@@ -174,10 +174,11 @@ void inserirNaPosicao(string nomeDoArquivo)
 	// Verificar se a posição é válida
 	arquivo.seekg(0, ios::end);
 	int numRegistros = arquivo.tellg() / sizeof(Employee);
-	if (posicao < 0 || posicao > numRegistros)
+	while (posicao < 0 || posicao > numRegistros)
 	{
-		cerr << "Posicao invalida!" << endl;
-		arquivo.close();
+		cout << "Posicao invalida! << endl";
+		cout << "Digite uma posicao valida: ";
+		cin >> posicao;
 	}
 
 	// Ler o registro existente na posição especificada
@@ -230,7 +231,7 @@ void inserirNaPosicao(string nomeDoArquivo)
 	arquivo.close();
 }
 
-// Metodo para trocar dois registros de posicao
+// Função para trocar dois registros de posicao
 void trocarRegistros(string nomeDoArquivo)
 {
 
@@ -243,10 +244,32 @@ void trocarRegistros(string nomeDoArquivo)
 
 	int posicao1, posicao2;
 
-	cout << "Digite a posicao do primeiro registro: ";
-	cin >> posicao1;
-	cout << "Digite a posicao do segundo registro: ";
-	cin >> posicao2;
+	do
+	{
+		cout << "Digite a posicao do primeiro registro: ";
+		cin >> posicao1;
+		cout << "Digite a posicao do segundo registro: ";
+		cin >> posicao2;
+
+		if (posicao1 < 0 || posicao2 < 0)
+		{
+			cout << "Posicoes invalidas. Digite valores não negativos." << endl;
+		}
+		else
+		{
+			arquivo.seekg(0, ios::end);
+			int numRegistros = arquivo.tellg() / sizeof(Employee);
+
+			if (posicao1 >= numRegistros || posicao2 >= numRegistros)
+			{
+				cout << "Posicoes invalidas. Digite valores dentro do intervalo [0, " << numRegistros - 1 << "]." << endl;
+			}
+			else
+			{
+				break;
+			}
+		}
+	} while (true);
 
 	Employee registro1, registro2;
 
@@ -265,7 +288,7 @@ void trocarRegistros(string nomeDoArquivo)
 	arquivo.close();
 }
 
-// Metodo para imprimir um trecho do arquivo binario
+// Função para imprimir um trecho do arquivo binario
 void imprimirTrecho(string nomeDoArquivo)
 {
 
@@ -299,7 +322,7 @@ void imprimirTrecho(string nomeDoArquivo)
 	arquivo.close();
 }
 
-// Metodo para editar um registro
+// Função para editar um registro
 void editar(string nomeDoArquivo)
 {
 	fstream arquivo(nomeDoArquivo, ios::binary | ios::in | ios::out);
@@ -348,7 +371,7 @@ void editar(string nomeDoArquivo)
 	arquivo.close();
 }
 
-// Metodo para imprimir todos os registros do arquivo binario
+// Função para imprimir todos os registros do arquivo binario
 void imprimeTudo(string nomeDoArquivo)
 {
 	ifstream leitura(nomeDoArquivo, ios::binary);
@@ -367,7 +390,7 @@ void imprimeTudo(string nomeDoArquivo)
 	leitura.close();
 }
 
-// Metodo para imprimir o menu principal
+// Função para imprimir o menu principal
 void menuPrincipal(string nomeDoArquivo)
 {
 	int escolha;

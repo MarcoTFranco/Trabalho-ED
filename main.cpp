@@ -46,6 +46,47 @@ bool existeId(string nomeDoArquivo, int id)
 	return false;
 }
 
+// Função para pegar os dados de um employee , assim separando leitura de dados com regra de negócio
+Employee lerDadosDoEmployee()
+{
+	int id;
+	string lat, lng, desc, zip, title, timeStamp, twp, addr, e;
+
+	cout << "Digite o identificador do employee: ";
+	cin >> id;
+	cin.ignore();
+	cout << "Digite o lat do employee: ";
+	getline(cin, lat);
+	cout << "Digite o lng do employee: ";
+	getline(cin, lng);
+	cout << "Digite o desc do employee: ";
+	getline(cin, desc);
+	cout << "Digite o zip do employee: ";
+	getline(cin, zip);
+	cout << "Digite o title do employee: ";
+	getline(cin, title);
+	cout << "Digite o timeStamp do employee: ";
+	getline(cin, timeStamp);
+	cout << "Digite o twp do employee: ";
+	getline(cin, twp);
+	cout << "Digite o addr do employee: ";
+	getline(cin, addr);
+	cout << "Digite o e do employee: ";
+	getline(cin, e);
+
+	Employee employee(id, lat.c_str(), lng.c_str(), desc.c_str(), zip.c_str(), title.c_str(), timeStamp.c_str(), twp.c_str(), addr.c_str(), e.c_str());
+	return employee;
+}
+
+// Função para ler uma posição, assim separando leitura de dados com regra de negócio
+int lerPosicao(string esperando)
+{
+	int posicao;
+	cout << "Digite a posicao onde deseja " << esperando << ": ";
+	cin >> posicao;
+	return posicao;
+}
+
 // Função para ler um arquivo CSV e gravar em um arquivo binario
 void lerArquivoCSV(string nomeDoArquivo)
 {
@@ -116,34 +157,9 @@ void inserir(string nomeDoArquivo)
 		throw runtime_error("Erro ao abrir o arquivo.");
 	}
 
-	int id;
-	string lat, lng, desc, zip, title, timeStamp, twp, addr, e;
+	Employee employee(lerDadosDoEmployee());
 
-	cout << "Digite o identificador do employee: ";
-	cin >> id;
-	cin.ignore();
-	cout << "Digite o lat do employee: ";
-	getline(cin, lat);
-	cout << "Digite o lng do employee: ";
-	getline(cin, lng);
-	cout << "Digite o desc do employee: ";
-	getline(cin, desc);
-	cout << "Digite o zip do employee: ";
-	getline(cin, zip);
-	cout << "Digite o title do employee: ";
-	getline(cin, title);
-	cout << "Digite o timeStamp do employee: ";
-	getline(cin, timeStamp);
-	cout << "Digite o twp do employee: ";
-	getline(cin, twp);
-	cout << "Digite o addr do employee: ";
-	getline(cin, addr);
-	cout << "Digite o e do employee: ";
-	getline(cin, e);
-
-	Employee employee(id, lat.c_str(), lng.c_str(), desc.c_str(), zip.c_str(), title.c_str(), timeStamp.c_str(), twp.c_str(), addr.c_str(), e.c_str());
-
-	bool existe = existeId(nomeDoArquivo, id);
+	bool existe = existeId(nomeDoArquivo, employee.getId());
 	if (existe)
 	{
 		cout << "O id ja existe!" << endl;
@@ -166,67 +182,62 @@ void inserirNaPosicao(string nomeDoArquivo)
 		throw runtime_error("Erro ao abrir o arquivo.");
 	}
 
-	int posicao;
-
-	cout << "Digite a posicao onde deseja inserir o novo registro: ";
-	cin >> posicao;
-
 	// Verificar se a posição é válida
-	arquivo.seekg(0, ios::end);
-	int numRegistros = arquivo.tellg() / sizeof(Employee);
-	while (posicao < 0 || posicao > numRegistros)
+	int posicao, numRegistros;
+	do
 	{
-		cout << "Posicao invalida! << endl";
-		cout << "Digite uma posicao valida: ";
-		cin >> posicao;
-	}
+		posicao = lerPosicao("inserir");
 
-	// Ler o registro existente na posição especificada
-	Employee registroExistente;
-	arquivo.seekg(posicao * sizeof(Employee));
-	arquivo.read(reinterpret_cast<char *>(&registroExistente), sizeof(Employee));
+		if (posicao < 0)
+		{
+			cout << "Posição invalida. Digite valor não negativo." << endl;
+		}
+		else
+		{
+			arquivo.seekg(0, ios::end);
+			numRegistros = arquivo.tellg() / sizeof(Employee);
 
-	int id;
-	string lat, lng, desc, zip, title, timeStamp, twp, addr, e;
+			if (posicao >= numRegistros)
+			{
+				cout << "Posição invalida. Digite valor dentro do intervalo [0, " << numRegistros - 1 << "]." << endl;
+			}
+			else
+			{
+				break;
+			}
+		}
+	} while (true);
 
-	cout << "Digite o identificador do employee: ";
-	cin >> id;
-	cin.ignore();
-	cout << "Digite o lat do employee: ";
-	getline(cin, lat);
-	cout << "Digite o lng do employee: ";
-	getline(cin, lng);
-	cout << "Digite o desc do employee: ";
-	getline(cin, desc);
-	cout << "Digite o zip do employee: ";
-	getline(cin, zip);
-	cout << "Digite o title do employee: ";
-	getline(cin, title);
-	cout << "Digite o timeStamp do employee: ";
-	getline(cin, timeStamp);
-	cout << "Digite o twp do employee: ";
-	getline(cin, twp);
-	cout << "Digite o addr do employee: ";
-	getline(cin, addr);
-	cout << "Digite o e do employee: ";
-	getline(cin, e);
+	Employee novoRegistro(lerDadosDoEmployee());
 
-	Employee novoRegistro(id, lat.c_str(), lng.c_str(), desc.c_str(), zip.c_str(), title.c_str(), timeStamp.c_str(), twp.c_str(), addr.c_str(), e.c_str());
-
-	// Deslocar os registros restantes para baixo
-	for (int i = numRegistros - 1; i >= posicao; i--)
+	// Verificar se o id já existe
+	bool existe = existeId(nomeDoArquivo, novoRegistro.getId());
+	if (existe)
 	{
-		Employee registroAnterior;
-		arquivo.seekg(i * sizeof(Employee));
-		arquivo.read(reinterpret_cast<char *>(&registroAnterior), sizeof(Employee));
-
-		arquivo.seekp((i + 1) * sizeof(Employee));
-		arquivo.write(reinterpret_cast<char *>(&registroAnterior), sizeof(Employee));
+		cout << "O id ja existe!" << endl;
 	}
+	else
+	{
+		// Ler o registro existente na posição especificada
+		Employee registroExistente;
+		arquivo.seekg(posicao * sizeof(Employee));
+		arquivo.read(reinterpret_cast<char *>(&registroExistente), sizeof(Employee));
 
-	// Escrever o novo registro na posição especificada
-	arquivo.seekp(posicao * sizeof(Employee));
-	arquivo.write(reinterpret_cast<char *>(&novoRegistro), sizeof(Employee));
+		// Deslocar os registros restantes para baixo
+		for (int i = numRegistros - 1; i >= posicao; i--)
+		{
+			Employee registroAnterior;
+			arquivo.seekg(i * sizeof(Employee));
+			arquivo.read(reinterpret_cast<char *>(&registroAnterior), sizeof(Employee));
+
+			arquivo.seekp((i + 1) * sizeof(Employee));
+			arquivo.write(reinterpret_cast<char *>(&registroAnterior), sizeof(Employee));
+		}
+
+		// Escrever o novo registro na posição especificada
+		arquivo.seekp(posicao * sizeof(Employee));
+		arquivo.write(reinterpret_cast<char *>(&novoRegistro), sizeof(Employee));
+	}
 
 	arquivo.close();
 }
@@ -246,10 +257,8 @@ void trocarRegistros(string nomeDoArquivo)
 
 	do
 	{
-		cout << "Digite a posicao do primeiro registro: ";
-		cin >> posicao1;
-		cout << "Digite a posicao do segundo registro: ";
-		cin >> posicao2;
+		posicao1 = lerPosicao("trocar o registro n. º1");
+		posicao2 = lerPosicao("trocar o registro n. º2");
 
 		if (posicao1 < 0 || posicao2 < 0)
 		{
@@ -301,10 +310,8 @@ void imprimirTrecho(string nomeDoArquivo)
 
 	int comeco, fim;
 
-	cout << "Digite o numero da linha inicial: ";
-	cin >> comeco;
-	cout << "Digite o numero da linha final: ";
-	cin >> fim;
+	comeco = lerPosicao("começar a imprimir o trecho");
+	fim = lerPosicao("que seja o fim do trecho");
 
 	Employee employee;
 

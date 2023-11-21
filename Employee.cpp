@@ -31,33 +31,33 @@ Employee::Employee(int dado0, const char *dado1, const char *dado2, const char *
     strcpy(e, dado9);
 };
 
-//Construtor padrao
+// Construtor padrao
 Employee::Employee(){};
 
-//Destrutor
+// Destrutor
 Employee::~Employee(){};
 
-//Metodos para pegar id;
+// Metodos para pegar id;
 int Employee::getId()
 {
     return id;
 }
 
-//Metodo para mudar title;
+// Metodo para mudar title;
 void Employee::setTitle(const char *dado)
 {
     assert(strlen(dado) < sizeof(title));
     strcpy(title, dado);
 }
 
-//Metodo para mudar timeStamp;
+// Metodo para mudar timeStamp;
 void Employee::setTimeStamp(const char *dado)
 {
     assert(strlen(dado) < sizeof(timeStamp));
     strcpy(timeStamp, dado);
 }
 
-//Metodo para imprimir informacoes
+// Metodo para imprimir informacoes
 void Employee::imprimirInformacoes()
 {
     cout << "id: " << id << endl;

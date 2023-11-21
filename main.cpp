@@ -306,14 +306,19 @@ void imprimirTrecho(string nomeDoArquivo)
 	if (!arquivo)
 	{
 		throw runtime_error("Erro ao abrir o arquivo.");
+		
 	}
+
+	Employee employee;
+
+	arquivo.seekg(0, ios::end);
+	int numRegistros = arquivo.tellg() / sizeof(Employee);
+	cout << "Digite valores dentro do intervalo [0, " << numRegistros - 1 << "]." << endl;
 
 	int comeco, fim;
 
 	comeco = lerPosicao("começar a imprimir o trecho");
 	fim = lerPosicao("que seja o fim do trecho");
-
-	Employee employee;
 
 	int linha = 0;
 	arquivo.seekg(0, ios::beg);

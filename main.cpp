@@ -30,55 +30,104 @@ string removerExtensaoDaPalavra(string palavra, string extensao)
 	return palavra;
 }
 
-// Função para verificar se um id existe no arquivo binario
-bool existeId(string nomeDoArquivo, int id)
+// Função para pegar o id mais alto do arquivo binario
+int idMaisAlto(string nomeDoArquivo)
 {
 	ifstream leitura(nomeDoArquivo, ios::binary);
 	Employee aux;
+	int id = 0;
 	while (leitura.read((char *)&aux, sizeof(Employee)))
 	{
-		if (aux.getId() == id)
+		if (aux.getId() > id)
 		{
-			return true;
+			id = aux.getId();
 		}
 	}
 	leitura.close();
-	return false;
+	return id;
 }
 
-// Função para pegar os dados de um employee , assim separando leitura de dados com regra de negócio
-Employee lerDadosDoEmployee()
+// Função para imprimir o painel de editar
+void painelEditar(int &id, string &titleS, string &timeStampS)
 {
-	int id;
-	string lat, lng, desc, zip, title, timeStamp, twp, addr, e;
 
-	cout << "Digite o identificador do employee: ";
+	cout << "Digite o id do employee que deseja alterar: ";
 	cin >> id;
-	cin.ignore();
-	cout << "Digite o lat do employee: ";
-	getline(cin, lat);
-	cout << "Digite o lng do employee: ";
-	getline(cin, lng);
-	cout << "Digite o desc do employee: ";
-	getline(cin, desc);
-	cout << "Digite o zip do employee: ";
-	getline(cin, zip);
-	cout << "Digite o title do employee: ";
-	getline(cin, title);
-	cout << "Digite o timeStamp do employee: ";
-	getline(cin, timeStamp);
-	cout << "Digite o twp do employee: ";
-	getline(cin, twp);
-	cout << "Digite o addr do employee: ";
-	getline(cin, addr);
-	cout << "Digite o e do employee: ";
-	getline(cin, e);
 
-	Employee employee(id, lat.c_str(), lng.c_str(), desc.c_str(), zip.c_str(), title.c_str(), timeStamp.c_str(), twp.c_str(), addr.c_str(), e.c_str());
+	cin.ignore();
+
+	cout << "Digite o novo title: ";
+	getline(cin, titleS);
+
+	cout << "Digite o novo timeStamp (yy-mm-dd hh:mm:ss): ";
+	getline(cin, timeStampS);
+}
+
+// Função para buscar a posição de um employee por id
+int buscarPosicaoPorId(string nomeDoArquivo, int id)
+{
+	ifstream arquivo(nomeDoArquivo, ios::binary);
+
+	if (!arquivo)
+	{
+		throw runtime_error("Erro ao abrir o arquivo.");
+	}
+
+	Employee employee;
+	int posicao = -1;
+	int linha = 0;
+
+	arquivo.seekg(0, ios::beg);
+	while (arquivo.read((char *)&employee, sizeof(Employee)))
+	{
+		if (employee.getId() == id)
+		{
+			posicao = linha;
+			return posicao;
+		}
+		linha++;
+	}
+
+	arquivo.close();
+
+	return posicao;
+}
+
+// Função para pegar os dados de um employee , assim separando painel de regra de negócio
+Employee lerDadosDoEmployee(string nomeDoArquivo)
+{
+	int id, e;
+	float lat, lng, zip;
+	string desc, title, timeStamp, twp, addr;
+
+	id = idMaisAlto(nomeDoArquivo) + 1;
+	cout << "Digite o lat do employee (40.299): ";
+	cin >> lat;
+	cout << "Digite o lng do employee (-75.5835): ";
+	cin >> lng;
+	cin.ignore();
+	cout << "Digite o desc do employee (REINDEER CT & DEAD END): ";
+	getline(cin, desc);
+	cout << "Digite o zip do employee (19525.0): ";
+	cin >> zip;
+	cin.ignore();
+	cout << "Digite o title do employee (EMS: BACK PAINS/INJURY): ";
+	getline(cin, title);
+	cout << "Digite o timeStamp do employee (yy-mm-dd hh:mm:ss): ";
+	getline(cin, timeStamp);
+	cout << "Digite o twp do employee (LOWER POTTSGROVE): ";
+	getline(cin, twp);
+	cout << "Digite o addr do employee (CHERRYWOOD CT & DEAD END): ";
+	getline(cin, addr);
+	cout << "Digite o e do employee (1): ";
+	cin >> e;
+
+	Employee employee(id, lat, lng, desc.c_str(), zip,
+					  title.c_str(), timeStamp.c_str(), twp.c_str(), addr.c_str(), e);
 	return employee;
 }
 
-// Função para ler uma posição, assim separando leitura de dados com regra de negócio
+// Função para ler uma posição, assim separando painel de regra de negócio
 int lerPosicao(string esperando)
 {
 	int posicao;
@@ -104,9 +153,10 @@ void lerArquivoCSV(string nomeDoArquivo)
 	string auxColuna;
 	string campos[10];
 	Employee employee;
-	int id;
-	char lat[100], lng[100], desc[200], zip[100], title[100],
-		timeStamp[100], twp[100], addr[100], e[100];
+	int id, e;
+	float lat, lng, zip;
+	char desc[200], title[100],
+		timeStamp[20], twp[100], addr[100];
 
 	getline(arquivo, auxLinha);
 	while (getline(arquivo, auxLinha))
@@ -122,14 +172,11 @@ void lerArquivoCSV(string nomeDoArquivo)
 		Employee employee;
 		stringstream streamId(campos[0]);
 		streamId >> id;
-		assert(campos[1].length() < sizeof(lat));
-		strcpy(lat, campos[1].c_str());
-		assert(campos[2].length() < sizeof(lng));
-		strcpy(lng, campos[2].c_str());
+		lat = stof(campos[1]);
+		lng = stof(campos[2]);
 		assert(campos[3].length() < sizeof(desc));
 		strcpy(desc, campos[3].c_str());
-		assert(campos[4].length() < sizeof(zip));
-		strcpy(zip, campos[4].c_str());
+		zip = stof(campos[4]);
 		assert(campos[5].length() < sizeof(title));
 		strcpy(title, campos[5].c_str());
 		assert(campos[6].length() < sizeof(timeStamp));
@@ -138,8 +185,8 @@ void lerArquivoCSV(string nomeDoArquivo)
 		strcpy(twp, campos[7].c_str());
 		assert(campos[8].length() < sizeof(addr));
 		strcpy(addr, campos[8].c_str());
-		assert(campos[9].length() < sizeof(e));
-		strcpy(e, campos[9].c_str());
+		stringstream streamE(campos[9]);
+		streamE >> e;
 		employee = Employee(id, lat, lng, desc, zip, title, timeStamp, twp, addr, e);
 		gravaBinario.write(reinterpret_cast<char *>(&employee), sizeof(Employee));
 	}
@@ -157,17 +204,9 @@ void inserir(string nomeDoArquivo)
 		throw runtime_error("Erro ao abrir o arquivo.");
 	}
 
-	Employee employee(lerDadosDoEmployee());
+	Employee employee(lerDadosDoEmployee(nomeDoArquivo));
 
-	bool existe = existeId(nomeDoArquivo, employee.getId());
-	if (existe)
-	{
-		cout << "O id ja existe!" << endl;
-	}
-	else
-	{
-		arquivo.write(reinterpret_cast<char *>(&employee), sizeof(Employee));
-	}
+	arquivo.write(reinterpret_cast<char *>(&employee), sizeof(Employee));
 
 	arquivo.close();
 }
@@ -208,36 +247,27 @@ void inserirNaPosicao(string nomeDoArquivo)
 		}
 	} while (true);
 
-	Employee novoRegistro(lerDadosDoEmployee());
+	Employee novoRegistro(lerDadosDoEmployee(nomeDoArquivo));
 
-	// Verificar se o id já existe
-	bool existe = existeId(nomeDoArquivo, novoRegistro.getId());
-	if (existe)
+	// Ler o registro existente na posição especificada
+	Employee registroExistente;
+	arquivo.seekg(posicao * sizeof(Employee));
+	arquivo.read(reinterpret_cast<char *>(&registroExistente), sizeof(Employee));
+
+	// Deslocar os registros restantes para baixo
+	for (int i = numRegistros - 1; i >= posicao; i--)
 	{
-		cout << "O id ja existe!" << endl;
+		Employee registroAnterior;
+		arquivo.seekg(i * sizeof(Employee));
+		arquivo.read(reinterpret_cast<char *>(&registroAnterior), sizeof(Employee));
+
+		arquivo.seekp((i + 1) * sizeof(Employee));
+		arquivo.write(reinterpret_cast<char *>(&registroAnterior), sizeof(Employee));
 	}
-	else
-	{
-		// Ler o registro existente na posição especificada
-		Employee registroExistente;
-		arquivo.seekg(posicao * sizeof(Employee));
-		arquivo.read(reinterpret_cast<char *>(&registroExistente), sizeof(Employee));
 
-		// Deslocar os registros restantes para baixo
-		for (int i = numRegistros - 1; i >= posicao; i--)
-		{
-			Employee registroAnterior;
-			arquivo.seekg(i * sizeof(Employee));
-			arquivo.read(reinterpret_cast<char *>(&registroAnterior), sizeof(Employee));
-
-			arquivo.seekp((i + 1) * sizeof(Employee));
-			arquivo.write(reinterpret_cast<char *>(&registroAnterior), sizeof(Employee));
-		}
-
-		// Escrever o novo registro na posição especificada
-		arquivo.seekp(posicao * sizeof(Employee));
-		arquivo.write(reinterpret_cast<char *>(&novoRegistro), sizeof(Employee));
-	}
+	// Escrever o novo registro na posição especificada
+	arquivo.seekp(posicao * sizeof(Employee));
+	arquivo.write(reinterpret_cast<char *>(&novoRegistro), sizeof(Employee));
 
 	arquivo.close();
 }
@@ -306,7 +336,6 @@ void imprimirTrecho(string nomeDoArquivo)
 	if (!arquivo)
 	{
 		throw runtime_error("Erro ao abrir o arquivo.");
-		
 	}
 
 	Employee employee;
@@ -344,42 +373,30 @@ void editar(string nomeDoArquivo)
 	}
 
 	int id;
-	cout << "Digite o id do employee que deseja alterar: ";
-	cin >> id;
-
+	string titleS, timeStampS;
+	char title[100], timeStamp[100];
 	Employee employee;
 
-	char title[100], timeStamp[100];
-	string titleS, timeStampS;
+	painelEditar(id, titleS, timeStampS);
 
-	while (arquivo.read(reinterpret_cast<char *>(&employee), sizeof(Employee)))
+	int posicao = buscarPosicaoPorId(nomeDoArquivo, id);
+
+	arquivo.seekg(posicao * sizeof(Employee), ios::beg);
+	arquivo.read((char *)&employee, sizeof(Employee));
+
+	assert(titleS.length() < sizeof(title));
+	strcpy(title, titleS.c_str());
+	assert(timeStampS.length() < sizeof(timeStamp));
+	strcpy(timeStamp, timeStampS.c_str());
+
+	employee.setTitle(title);
+	employee.setTimeStamp(timeStamp);
+
+	if (posicao != -1)
 	{
-		if (employee.getId() == id)
-		{
-
-			cin.ignore();
-			cout << "Digite o novo title: ";
-			getline(cin, titleS);
-
-			cout << "Digite o novo timeStamp (yy-mm-dd hh:mm:ss): ";
-			getline(cin, timeStampS);
-
-			assert(titleS.length() < sizeof(title));
-			strcpy(title, titleS.c_str());
-			assert(timeStampS.length() < sizeof(timeStamp));
-			strcpy(timeStamp, timeStampS.c_str());
-
-			employee.setTitle(title);
-			employee.setTimeStamp(timeStamp);
-
-			int pos = arquivo.tellg();
-			arquivo.seekp(pos - sizeof(Employee));
-			arquivo.write(reinterpret_cast<char *>(&employee), sizeof(Employee));
-			cout << "Dados atualizados com sucesso." << endl;
-			employee.imprimirInformacoes();
-		}
+		arquivo.seekp(posicao * sizeof(Employee), ios::beg);
+		arquivo.write((char *)&employee, sizeof(Employee));
 	}
-
 	arquivo.close();
 }
 
@@ -458,6 +475,7 @@ void menuPrincipal(string nomeDoArquivo)
 		}
 	}
 }
+
 
 int main()
 {

@@ -7,18 +7,15 @@
 
 using namespace std;
 
-Employee::Employee(int dado0, const char *dado1, const char *dado2, const char *dado3, const char *dado4,
-                   const char *dado5, const char *dado6, const char *dado7, const char *dado8, const char *dado9)
+Employee::Employee(int dado0, float dado1, float dado2, const char *dado3, float dado4,
+                   const char *dado5, const char *dado6, const char *dado7, const char *dado8, int dado9)
 {
     id = dado0;
-    assert(strlen(dado1) < sizeof(lat));
-    strcpy(lat, dado1);
-    assert(strlen(dado2) < sizeof(lng));
-    strcpy(lng, dado2);
+    lat = dado1;
+    lng = dado2;
     assert(strlen(dado3) < sizeof(desc));
     strcpy(desc, dado3);
-    assert(strlen(dado4) < sizeof(zip));
-    strcpy(zip, dado4);
+    zip = dado4;
     assert(strlen(dado5) < sizeof(title));
     strcpy(title, dado5);
     assert(strlen(dado6) < sizeof(timeStamp));
@@ -27,8 +24,7 @@ Employee::Employee(int dado0, const char *dado1, const char *dado2, const char *
     strcpy(twp, dado7);
     assert(strlen(dado8) < sizeof(addr));
     strcpy(addr, dado8);
-    assert(strlen(dado9) < sizeof(e));
-    strcpy(e, dado9);
+    e = dado9;
 };
 
 // Construtor padrao

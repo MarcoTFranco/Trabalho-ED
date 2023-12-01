@@ -20,11 +20,7 @@ using namespace std;
 
 void ordena(string nomeDoArquivo)
 {
-    ordena_externo(nomeDoArquivo.c_str());
-
-	//remove(nomeDoArquivo.c_str());
-
-    //rename("sorted.bin", nomeDoArquivo.c_str());
+    principal(nomeDoArquivo);
 }
 
 // Função para remover extensao de uma palavra

@@ -5,11 +5,10 @@
 #include <fstream>
 #include <vector>
 #include <algorithm>
-#include <thread>
 
 using namespace std;
 
-struct Trabalhador
+struct Trabalhador 
 {
     int id;
     float lat, lng, zip;
@@ -17,76 +16,74 @@ struct Trabalhador
     int e;
 };
 
-void intercala(const vector<Trabalhador>& arr1, const vector<Trabalhador>& arr2, vector<Trabalhador>& result)
-{
-    // Merge the two sorted arrays into the result array
-    merge(arr1.begin(), arr1.end(), arr2.begin(), arr2.end(), result.begin(), [](const Trabalhador& a, const Trabalhador& b) {
-        return a.id < b.id;
-    });
+void merge(std::vector<Trabalhador> &result, const std::vector<Trabalhador> &left, const std::vector<Trabalhador> &right) {
+    auto leftIt = left.begin();
+    auto rightIt = right.begin();
+
+    while (leftIt != left.end() && rightIt != right.end()) {
+        if (leftIt->id <= rightIt->id) {
+            result.push_back(*leftIt);
+            ++leftIt;
+        } else {
+            result.push_back(*rightIt);
+            ++rightIt;
+        }
+    }
+
+    result.insert(result.end(), leftIt, left.end());
+    result.insert(result.end(), rightIt, right.end());
 }
 
-void mergeSort(vector<Trabalhador>& arr)
-{
-    if (arr.size() <= 1)
-        return;
-
-    vector<Trabalhador> left(arr.begin(), arr.begin() + arr.size() / 2);
-    vector<Trabalhador> right(arr.begin() + arr.size() / 2, arr.end());
-
-    mergeSort(left);
-    mergeSort(right);
-
-    intercala(left, right, arr);
-}
-
-void ordena_externo(const char* arq)
-{
-    ifstream inputFile(arq, ios::binary);
-    if (!inputFile)
-    {
-        cerr << "Failed to open input file: " << arq << endl;
+void mergeSortExternal(const std::string &inputFile, const std::string &outputFile, int blockSize = 2) {
+    std::ifstream input(inputFile, std::ios::binary);
+    if (!input.is_open()) {
+        std::cerr << "Error opening input file." << std::endl;
         return;
     }
 
-    std::vector<Trabalhador> workers;
     Trabalhador worker;
-    while (inputFile.read(reinterpret_cast<char*>(&worker), sizeof(Trabalhador)))
-    {
-        workers.push_back(worker);
-    }
-    inputFile.close();
+    std::vector<Trabalhador> workers;
 
-    if (workers.empty())
-    {
-        cerr << "Input file is empty." << endl;
-        return;
-    }
+    // Read and process data in chunks
+    while (true) {
+        workers.clear(); // Clear the workers vector before reading a new chunk
+        workers.reserve(blockSize);
 
-    // Check if the input file is already sorted
-    bool isSorted = is_sorted(workers.begin(), workers.end(), [](const Trabalhador& a, const Trabalhador& b) {
-        return a.id < b.id;
-    });
+        for (int i = 0; i < blockSize; ++i) {
+            if (input.read(reinterpret_cast<char *>(&worker), sizeof(Trabalhador))) {
+                workers.push_back(worker);
+            } else {
+                break; // Reached the end of the file
+            }
+        }
 
-    if (isSorted)
-    {
-        cout << "Input file is already sorted." << endl;
-        return;
-    }
+        if (workers.empty()) {
+            break; // No more data to process
+        }
 
-    mergeSort(workers);
+        // Perform sorting and merging for the current chunk
+        std::sort(workers.begin(), workers.end(), [](const Trabalhador &a, const Trabalhador &b) {
+            return a.id < b.id;
+        });
 
-    ofstream outputFile(arq, ios::binary);
-    if (!outputFile)
-    {
-        cerr << "Failed to open output file: " << arq << endl;
-        return;
+        std::ofstream output(outputFile, std::ios::binary | std::ios::app);
+        output.write(reinterpret_cast<const char *>(workers.data()), sizeof(Trabalhador) * workers.size());
+        output.close();
     }
 
-    for (const auto& worker : workers)
-    {
-        outputFile.write(reinterpret_cast<const char*>(&worker), sizeof(Trabalhador));
-    }
-    outputFile.close();
+    input.close();
+}
+
+void principal (string input) {
+    string inputFile = input;
+    string outputFile = "resultado.bin";
+    int blockSize = 2;
+
+    mergeSortExternal(inputFile, outputFile, blockSize);
+
+    remove(input.c_str());
+
+    rename("resultado.bin", input.c_str());
 }
 
 #endif

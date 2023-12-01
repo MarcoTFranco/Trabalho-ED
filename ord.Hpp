@@ -4,6 +4,8 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <algorithm>
+#include <thread>
 
 using namespace std;
 
@@ -15,177 +17,76 @@ struct Trabalhador
     int e;
 };
 
-void merge(Trabalhador arr[], int left, int mid, int right)
+void intercala(const vector<Trabalhador>& arr1, const vector<Trabalhador>& arr2, vector<Trabalhador>& result)
 {
-    int n1 = mid - left + 1;
-    int n2 = right - mid;
-
-    vector<Trabalhador> LeftArr(n1);
-    vector<Trabalhador> RightArr(n2);
-
-    for (int i = 0; i < n1; i++)
-        LeftArr[i] = arr[left + i];
-    for (int j = 0; j < n2; j++)
-        RightArr[j] = arr[mid + 1 + j];
-
-    int i = 0, j = 0, k = left;
-    while (i < n1 && j < n2)
-    {
-        if (LeftArr[i].id <= RightArr[j].id)
-        {
-            arr[k] = LeftArr[i];
-            i++;
-        }
-        else
-        {
-            arr[k] = RightArr[j];
-            j++;
-        }
-        k++;
-    }
-
-    while (i < n1)
-    {
-        arr[k] = LeftArr[i];
-        i++;
-        k++;
-    }
-
-    while (j < n2)
-    {
-        arr[k] = RightArr[j];
-        j++;
-        k++;
-    }
+    // Merge the two sorted arrays into the result array
+    merge(arr1.begin(), arr1.end(), arr2.begin(), arr2.end(), result.begin(), [](const Trabalhador& a, const Trabalhador& b) {
+        return a.id < b.id;
+    });
 }
 
-void mergeSort(Trabalhador arr[], int left, int right)
+void mergeSort(vector<Trabalhador>& arr)
 {
-    if (left < right)
-    {
-        int mid = left + (right - left) / 2;
-        mergeSort(arr, left, mid);
-        mergeSort(arr, mid + 1, right);
-        merge(arr, left, mid, right);
-    }
+    if (arr.size() <= 1)
+        return;
+
+    vector<Trabalhador> left(arr.begin(), arr.begin() + arr.size() / 2);
+    vector<Trabalhador> right(arr.begin() + arr.size() / 2, arr.end());
+
+    mergeSort(left);
+    mergeSort(right);
+
+    intercala(left, right, arr);
 }
 
-void mergeFiles(const char *input_file1, const char *input_file2, const char *output_file)
+void ordena_externo(const char* arq)
 {
-    ifstream in1(input_file1, ios::binary);
-    ifstream in2(input_file2, ios::binary);
-    ofstream out(output_file, ios::binary);
-
-    Trabalhador worker1, worker2;
-
-    if (!(in1.read(reinterpret_cast<char *>(&worker1), sizeof(Trabalhador))))
+    ifstream inputFile(arq, ios::binary);
+    if (!inputFile)
     {
-        while (in2.read(reinterpret_cast<char *>(&worker2), sizeof(Trabalhador)))
-        {
-            out.write(reinterpret_cast<const char *>(&worker2), sizeof(Trabalhador));
-        }
-    }
-    else if (!(in2.read(reinterpret_cast<char *>(&worker2), sizeof(Trabalhador))))
-    {
-        out.write(reinterpret_cast<const char *>(&worker1), sizeof(Trabalhador));
-        while (in1.read(reinterpret_cast<char *>(&worker1), sizeof(Trabalhador)))
-        {
-            out.write(reinterpret_cast<const char *>(&worker1), sizeof(Trabalhador));
-        }
-    }
-    else
-    {
-        do
-        {
-            if (worker1.id <= worker2.id)
-            {
-                out.write(reinterpret_cast<const char *>(&worker1), sizeof(Trabalhador));
-                if (!(in1.read(reinterpret_cast<char *>(&worker1), sizeof(Trabalhador))))
-                    break;
-            }
-            else
-            {
-                out.write(reinterpret_cast<const char *>(&worker2), sizeof(Trabalhador));
-                if (!(in2.read(reinterpret_cast<char *>(&worker2), sizeof(Trabalhador))))
-                    break;
-            }
-        } while (true);
-
-        while (in1.read(reinterpret_cast<char *>(&worker1), sizeof(Trabalhador)))
-        {
-            out.write(reinterpret_cast<const char *>(&worker1), sizeof(Trabalhador));
-        }
-
-        while (in2.read(reinterpret_cast<char *>(&worker2), sizeof(Trabalhador)))
-        {
-            out.write(reinterpret_cast<const char *>(&worker2), sizeof(Trabalhador));
-        }
+        cerr << "Failed to open input file: " << arq << endl;
+        return;
     }
 
-    in1.close();
-    in2.close();
-    out.close();
-}
-
-void mergeExternalSort(const char *input_file, const char *output_file, int chunk_size)
-{
-    ifstream in(input_file, ios::binary);
-    Trabalhador *chunk = new Trabalhador[chunk_size];
-    int run = 0;
-
-    while (!in.eof())
+    std::vector<Trabalhador> workers;
+    Trabalhador worker;
+    while (inputFile.read(reinterpret_cast<char*>(&worker), sizeof(Trabalhador)))
     {
-        in.read(reinterpret_cast<char *>(chunk), chunk_size * sizeof(Trabalhador));
-        int num_read = in.gcount() / sizeof(Trabalhador);
-        if (num_read > 0)
-        {
-            mergeSort(chunk, 0, num_read - 1);
-            ofstream out(to_string(run) + ".bin", ios::binary);
-            out.write(reinterpret_cast<const char *>(chunk), num_read * sizeof(Trabalhador));
-            out.close();
-            run++;
-        }
+        workers.push_back(worker);
+    }
+    inputFile.close();
+
+    if (workers.empty())
+    {
+        cerr << "Input file is empty." << endl;
+        return;
     }
 
-    in.close();
+    // Check if the input file is already sorted
+    bool isSorted = is_sorted(workers.begin(), workers.end(), [](const Trabalhador& a, const Trabalhador& b) {
+        return a.id < b.id;
+    });
 
-    int num_runs = run;
-
-    while (num_runs > 1)
+    if (isSorted)
     {
-        for (int i = 0; i < num_runs; i += 2)
-        {
-            string input_file1 = (i < num_runs) ? to_string(i) + ".bin" : "";
-            string input_file2 = (i + 1 < num_runs) ? to_string(i + 1) + ".bin" : "";
-            string output_file = to_string(i / 2) + ".bin";
-
-            mergeFiles(input_file1.c_str(), input_file2.c_str(), output_file.c_str());
-        }
-
-        num_runs = (num_runs + 1) / 2;
+        cout << "Input file is already sorted." << endl;
+        return;
     }
 
-    // Rename the final output file
-    rename("0.bin", output_file);
+    mergeSort(workers);
 
-    // Clean up temporary files
-    for (int i = 0; i < num_runs; ++i)
+    ofstream outputFile(arq, ios::binary);
+    if (!outputFile)
     {
-        remove((to_string(i) + ".bin").c_str());
+        cerr << "Failed to open output file: " << arq << endl;
+        return;
     }
 
-    delete[] chunk;
-}
-
-void principal(string nomeArquivo)
-{
-    const char *input_file = nomeArquivo.c_str();
-    const char *output_file = "trabalhadores_sorted.bin";
-    int chunk_size = 300000; // Assuming the number of records in the file is known
-
-    mergeExternalSort(input_file, output_file, chunk_size);
-
-    cout << "Merge Sort External completed successfully." << endl;
+    for (const auto& worker : workers)
+    {
+        outputFile.write(reinterpret_cast<const char*>(&worker), sizeof(Trabalhador));
+    }
+    outputFile.close();
 }
 
 #endif

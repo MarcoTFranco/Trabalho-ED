@@ -23,6 +23,8 @@ public:
 
     ~Employee();
 
+    bool operator<(const Employee& other) const;
+
     int getId();
 
     void setTitle(const char *dado);

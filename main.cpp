@@ -14,8 +14,18 @@
 #include <assert.h>
 
 #include "Employee.h"
+#include "ord.hpp"
 
 using namespace std;
+
+void ordena(string nomeDoArquivo)
+{
+    principal(nomeDoArquivo);
+
+	remove(nomeDoArquivo.c_str());
+
+    rename("trabalhadores_sorted.bin", nomeDoArquivo.c_str());
+}
 
 // Função para remover extensao de uma palavra
 string removerExtensaoDaPalavra(string palavra, string extensao)
@@ -434,7 +444,8 @@ void menuPrincipal(string nomeDoArquivo)
 			 << "  4 - Trocar dois registros" << endl
 			 << "  5 - Editar dados" << endl
 			 << "  6 - Imprimir tudo" << endl
-			 << "  7 - Sair" << endl
+			 << "  7 - Ordena" << endl
+			 << "  8 - Sair" << endl
 			 << "Digite sua escolha: ";
 		cin >> escolha;
 		switch (escolha)
@@ -465,6 +476,10 @@ void menuPrincipal(string nomeDoArquivo)
 			break;
 		case 7:
 			cout << endl;
+			ordena(nomeDoArquivo);
+			break;
+		case 8:
+			cout << endl;
 			cout << "Saindo..." << endl;
 			loop = false;
 			break;
@@ -475,7 +490,6 @@ void menuPrincipal(string nomeDoArquivo)
 		}
 	}
 }
-
 
 int main()
 {
@@ -500,6 +514,7 @@ int main()
 
 		menuPrincipal(novoNome);
 	}
+
 
 	return 0;
 }

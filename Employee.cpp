@@ -39,6 +39,11 @@ int Employee::getId()
     return id;
 }
 
+bool Employee::operator<(const Employee &other) const
+{
+    return id < other.id;
+}
+
 // Metodo para mudar title;
 void Employee::setTitle(const char *dado)
 {

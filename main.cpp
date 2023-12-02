@@ -21,6 +21,10 @@ using namespace std;
 void ordena(string nomeDoArquivo)
 {
     principal(nomeDoArquivo);
+
+    remove(nomeDoArquivo.c_str());
+
+    rename("s1.bin", nomeDoArquivo.c_str());
 }
 
 // Função para remover extensao de uma palavra

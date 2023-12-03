@@ -7,7 +7,7 @@
 #include <ctime>
 #include <string>
 
-#define N 100
+#define N 2000
 
 struct Trabalhador
 {
@@ -48,9 +48,8 @@ int criaArquivosOrdenados(const char *nome)
     char novo[20];
     int cont = 0, total = 0;
     std::ifstream f(nome, std::ios::binary);
-    while (!f.eof())
+    while (f.read(reinterpret_cast<char *>(V), N * sizeof(Trabalhador)))
     {
-        f.read(reinterpret_cast<char *>(V), N * sizeof(Trabalhador));
         total = f.gcount() / sizeof(Trabalhador);
 
         if (total > 0)

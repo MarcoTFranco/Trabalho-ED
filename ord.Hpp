@@ -6,57 +6,46 @@
 #include <cstdlib>
 #include <ctime>
 #include <string>
+#include "Employee.h"
 
 #define N 2000
 
-struct Trabalhador
-{
-    int id;
-    float lat, lng, zip;
-    char desc[200], title[100],
-        timeStamp[20], twp[100], addr[100];
-    int e;
-
-    bool operator<(const Trabalhador &t) const
-    {
-        return id < t.id;
-    }
-};
+using namespace std;
 
 struct Arquivo
 {
-    std::ifstream *f;
+    ifstream *f;
     int pos, MAX;
-    Trabalhador *buffer;
+    Employee *buffer;
 };
 
-void salvaArquivo(const char *nome, Trabalhador *V, int tam)
+void salvaArquivo(const char *nome, Employee *V, int tam)
 {
-    std::ofstream f(nome, std::ios::binary | std::ios::app);
-    f.write(reinterpret_cast<const char *>(V), tam * sizeof(Trabalhador));
+    ofstream f(nome, ios::binary | ios::app);
+    f.write(reinterpret_cast<const char *>(V), tam * sizeof(Employee));
     f.close();
 }
 
 int comparaTrabalhadores(const void *a, const void *b)
 {
-    return (*(Trabalhador *)a < *(Trabalhador *)b) ? -1 : 1;
+    return (*(Employee *)a < *(Employee *)b) ? -1 : 1;
 }
 
 int criaArquivosOrdenados(const char *nome)
 {
-    Trabalhador V[N];
+    Employee V[N];
     char novo[20];
     int cont = 0, total = 0;
-    std::ifstream f(nome, std::ios::binary);
-    while (f.read(reinterpret_cast<char *>(V), N * sizeof(Trabalhador)))
+    ifstream f(nome, ios::binary);
+    while (f.read(reinterpret_cast<char *>(V), N * sizeof(Employee)))
     {
-        total = f.gcount() / sizeof(Trabalhador);
+        total = f.gcount() / sizeof(Employee);
 
         if (total > 0)
         {
             cont++;
             sprintf(novo, "Temp%d.bin", cont);
-            std::qsort(V, total, sizeof(Trabalhador), comparaTrabalhadores);
+            qsort(V, total, sizeof(Employee), comparaTrabalhadores);
             salvaArquivo(novo, V, total);
         }
     }
@@ -78,7 +67,7 @@ void preencheBuffer(Arquivo *arq, int T)
     {
         if (!arq->f->eof())
         {
-            arq->f->read(reinterpret_cast<char *>(&arq->buffer[arq->MAX]), sizeof(Trabalhador));
+            arq->f->read(reinterpret_cast<char *>(&arq->buffer[arq->MAX]), sizeof(Employee));
             arq->MAX++;
         }
         else
@@ -90,7 +79,7 @@ void preencheBuffer(Arquivo *arq, int T)
     }
 }
 
-int procuraMenor(Arquivo *arq, int K, int T, Trabalhador *menor)
+int procuraMenor(Arquivo *arq, int K, int T, Employee *menor)
 {
     int i, idx = -1;
     for (int i = 0; i < K; i++)
@@ -124,7 +113,7 @@ void merge(const char *nome, int K, int T)
 {
     char novo[20];
     int i;
-    Trabalhador *buffer = new Trabalhador[T];
+    Employee *buffer = new Employee[T];
 
     Arquivo *arq;
     arq = new Arquivo[K];
@@ -132,14 +121,14 @@ void merge(const char *nome, int K, int T)
     for (i = 0; i < K; i++)
     {
         sprintf(novo, "Temp%d.bin", i + 1);
-        arq[i].f = new std::ifstream(novo, std::ios::binary);
+        arq[i].f = new ifstream(novo, ios::binary);
         arq[i].MAX = 0;
         arq[i].pos = 0;
-        arq[i].buffer = new Trabalhador[T];
+        arq[i].buffer = new Employee[T];
         preencheBuffer(&arq[i], T);
     }
 
-    Trabalhador menor;
+    Employee menor;
     int qtdBuffer = 0;
     while (procuraMenor(arq, K, T, &menor) == 1)
     {
@@ -169,8 +158,7 @@ void mergeSortExterno(const char *nome)
     char novo[20];
     int K = criaArquivosOrdenados(nome);
     int i, T = N / (K + 1);
-    std::cout << "Nro de arquivos:" << K << std::endl;
-    std::cout << "K:" << T << std::endl;
+    cout << "Numero de arquivos criados:" << K << endl;
 
     remove(nome);
     merge(nome, K, T);
@@ -180,12 +168,7 @@ void mergeSortExterno(const char *nome)
         sprintf(novo, "Temp%d.bin", i + 1);
         remove(novo);
     }
-    std::cout << "Fim!" << std::endl;
-}
-
-void principal(string input)
-{
-    mergeSortExterno(input.c_str());
+    cout << "Fim!" << endl;
 }
 
 #endif

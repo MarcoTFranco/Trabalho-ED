@@ -15,131 +15,14 @@
 
 #include "Employee.h"
 #include "ord.hpp"
+#include "interface.hpp"
+#include "utils.hpp"
 
 using namespace std;
 
 void ordena(string nomeDoArquivo)
 {
-	principal(nomeDoArquivo);
-}
-
-// Função para remover extensao de uma palavra
-string removerExtensaoDaPalavra(string palavra, string extensao)
-{
-	size_t pos = palavra.find(extensao);
-
-	if (pos != string::npos)
-	{
-		palavra = palavra.substr(0, pos);
-	}
-
-	return palavra;
-}
-
-// Função para pegar o id mais alto do arquivo binario
-int idMaisAlto(string nomeDoArquivo)
-{
-	ifstream leitura(nomeDoArquivo, ios::binary);
-	Employee aux;
-	int id = 0;
-	while (leitura.read((char *)&aux, sizeof(Employee)))
-	{
-		if (aux.getId() > id)
-		{
-			id = aux.getId();
-		}
-	}
-	leitura.close();
-	return id;
-}
-
-// Função para imprimir o painel de editar
-void painelEditar(int &id, string &titleS, string &timeStampS)
-{
-
-	cout << "Digite o id do employee que deseja alterar: ";
-	cin >> id;
-
-	cin.ignore();
-
-	cout << "Digite o novo title: ";
-	getline(cin, titleS);
-
-	cout << "Digite o novo timeStamp (yy-mm-dd hh:mm:ss): ";
-	getline(cin, timeStampS);
-}
-
-// Função para buscar a posição de um employee por id
-int buscarPosicaoPorId(string nomeDoArquivo, int id)
-{
-	ifstream arquivo(nomeDoArquivo, ios::binary);
-
-	if (!arquivo)
-	{
-		throw runtime_error("Erro ao abrir o arquivo.");
-	}
-
-	Employee employee;
-	int posicao = -1;
-	int linha = 0;
-
-	arquivo.seekg(0, ios::beg);
-	while (arquivo.read((char *)&employee, sizeof(Employee)))
-	{
-		if (employee.getId() == id)
-		{
-			posicao = linha;
-			return posicao;
-		}
-		linha++;
-	}
-
-	arquivo.close();
-
-	return posicao;
-}
-
-// Função para pegar os dados de um employee , assim separando painel de regra de negócio
-Employee lerDadosDoEmployee(string nomeDoArquivo)
-{
-	int id, e;
-	float lat, lng, zip;
-	string desc, title, timeStamp, twp, addr;
-
-	id = idMaisAlto(nomeDoArquivo) + 1;
-	cout << "Digite o lat do employee (40.299): ";
-	cin >> lat;
-	cout << "Digite o lng do employee (-75.5835): ";
-	cin >> lng;
-	cin.ignore();
-	cout << "Digite o desc do employee (REINDEER CT & DEAD END): ";
-	getline(cin, desc);
-	cout << "Digite o zip do employee (19525.0): ";
-	cin >> zip;
-	cin.ignore();
-	cout << "Digite o title do employee (EMS: BACK PAINS/INJURY): ";
-	getline(cin, title);
-	cout << "Digite o timeStamp do employee (yy-mm-dd hh:mm:ss): ";
-	getline(cin, timeStamp);
-	cout << "Digite o twp do employee (LOWER POTTSGROVE): ";
-	getline(cin, twp);
-	cout << "Digite o addr do employee (CHERRYWOOD CT & DEAD END): ";
-	getline(cin, addr);
-	cout << "Digite o e do employee (1): ";
-	cin >> e;
-
-	Employee employee(id, lat, lng, desc.c_str(), zip,
-					  title.c_str(), timeStamp.c_str(), twp.c_str(), addr.c_str(), e);
-	return employee;
-}
-
-// Função para ler uma posição, assim separando painel de regra de negócio
-int lerPosicao(string esperando)
-{
-	int posicao;
-	cout << "Digite a posicao onde deseja " << esperando << ": ";
-	cin >> posicao;
-	return posicao;
+	mergeSortExterno(nomeDoArquivo.c_str());
 }
 
 // Função para ler um arquivo CSV e gravar em um arquivo binario
@@ -231,7 +114,7 @@ void inserirNaPosicao(string nomeDoArquivo)
 	int posicao, numRegistros;
 	do
 	{
-		posicao = lerPosicao("inserir");
+		painelInserirNaPosicao(posicao);
 
 		if (posicao < 0)
 		{
@@ -293,8 +176,7 @@ void trocarRegistros(string nomeDoArquivo)
 
 	do
 	{
-		posicao1 = lerPosicao("trocar o registro n. º1");
-		posicao2 = lerPosicao("trocar o registro n. º2");
+		painelTrocarRegistros(posicao1, posicao2);
 
 		if (posicao1 < 0 || posicao2 < 0)
 		{
@@ -348,12 +230,10 @@ void imprimirTrecho(string nomeDoArquivo)
 
 	arquivo.seekg(0, ios::end);
 	int numRegistros = arquivo.tellg() / sizeof(Employee);
-	cout << "Digite valores dentro do intervalo [0, " << numRegistros - 1 << "]." << endl;
 
 	int comeco, fim;
 
-	comeco = lerPosicao("começar a imprimir o trecho");
-	fim = lerPosicao("que seja o fim do trecho");
+	painelImprimirTrecho(numRegistros, comeco, fim);
 
 	int linha = 0;
 	arquivo.seekg(0, ios::beg);

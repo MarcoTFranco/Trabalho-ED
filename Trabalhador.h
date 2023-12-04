@@ -1,12 +1,12 @@
-#ifndef EMPLOYEE_H
-#define EMPLOYEE_H
+#ifndef TRABALHADOR_H
+#define TRABALHADOR_H
 
 #include <iostream>
 #include <string>
 
 using namespace std;
 
-class Employee
+class Trabalhador
 {
 private:
     int id;
@@ -16,14 +16,14 @@ private:
     int e;
 
 public:
-    Employee();
+    Trabalhador();
 
-    Employee(int dado0, float dado1, float dado2, const char *dado3, float dado4,
+    Trabalhador(int dado0, float dado1, float dado2, const char *dado3, float dado4,
              const char *dado5, const char *dado6, const char *dado7, const char *dado8, int dado9);
 
-    ~Employee();
+    ~Trabalhador();
 
-    bool operator<(const Employee &other) const;
+    bool operator<(const Trabalhador &other) const;
 
     int getId();
 

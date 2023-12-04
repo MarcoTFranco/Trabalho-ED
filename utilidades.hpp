@@ -1,11 +1,11 @@
-#ifndef UTILS_HPP
-#define UTILS_HPP
+#ifndef UTILIDADES_HPP
+#define UTILIDADES_HPP
 
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <fstream>
-#include "Employee.h"
+#include "Trabalhador.h"
 
 using namespace std;
 
@@ -26,9 +26,9 @@ string removerExtensaoDaPalavra(string palavra, string extensao)
 int idMaisAlto(string nomeDoArquivo)
 {
     ifstream leitura(nomeDoArquivo, ios::binary);
-    Employee aux;
+    Trabalhador aux;
     int id = 0;
-    while (leitura.read((char *)&aux, sizeof(Employee)))
+    while (leitura.read((char *)&aux, sizeof(Trabalhador)))
     {
         if (aux.getId() > id)
         {
@@ -49,12 +49,12 @@ int buscarPosicaoPorId(string nomeDoArquivo, int id)
         throw runtime_error("Erro ao abrir o arquivo.");
     }
 
-    Employee employee;
+    Trabalhador employee;
     int posicao = -1;
     int linha = 0;
 
     arquivo.seekg(0, ios::beg);
-    while (arquivo.read((char *)&employee, sizeof(Employee)))
+    while (arquivo.read((char *)&employee, sizeof(Trabalhador)))
     {
         if (employee.getId() == id)
         {

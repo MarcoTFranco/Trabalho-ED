@@ -34,8 +34,8 @@ Para executar o projeto, siga estas etapas:
 O projeto possui os seguintes arquivos que são imprescindíveis para o seu funcionamento.
 
 - main.cpp
-- Employee.cpp
-- Employee.h
+- Trabalhador.cpp
+- Trabalhador.h
 - Makefile
 
 ## Changelog

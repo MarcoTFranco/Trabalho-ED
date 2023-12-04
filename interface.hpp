@@ -6,7 +6,8 @@
 
 using namespace std;
 
-#include "utils.hpp"
+#include "utilidades.hpp"
+#include "Trabalhador.h"
 
 // Função para imprimir o painel de editar
 void painelEditar(int &id, string &titleS, string &timeStampS)
@@ -24,8 +25,8 @@ void painelEditar(int &id, string &titleS, string &timeStampS)
 	getline(cin, timeStampS);
 }
 
-//Painel para imprimir um trecho do arquivo binario
-void painelImprimirTrecho(int numRegistros,int &comeco, int &fim)
+// Função para imprimir o painel de ImprimirTrecho
+void painelImprimirTrecho(int numRegistros, int &comeco, int &fim)
 {
 	cout << "Digite valores dentro do intervalo [0, " << numRegistros - 1 << "]." << endl;
 	cout << "Digite o comeco do trecho: ";
@@ -34,14 +35,15 @@ void painelImprimirTrecho(int numRegistros,int &comeco, int &fim)
 	cin >> fim;
 }
 
+// Painel para InserirNaPosicao
 void painelInserirNaPosicao(int &posicao)
 {
 	cout << "Digite a posicao onde deseja inserir: ";
 	cin >> posicao;
 }
 
-// Função para pegar os dados de um employee , assim separando painel de regra de negócio
-Employee lerDadosDoEmployee(string nomeDoArquivo)
+// Função para pegar os dados de um employee
+Trabalhador lerDadosDoEmployee(string nomeDoArquivo)
 {
 	int id, e;
 	float lat, lng, zip;
@@ -67,11 +69,12 @@ Employee lerDadosDoEmployee(string nomeDoArquivo)
 	cout << "Digite o addr do employee (CHERRYWOOD CT & DEAD END): ";
 	getline(cin, addr);
 
-	Employee employee(id, lat, lng, desc.c_str(), zip,
-					  title.c_str(), timeStamp.c_str(), twp.c_str(), addr.c_str(), 1);
+	Trabalhador employee(id, lat, lng, desc.c_str(), zip,
+						 title.c_str(), timeStamp.c_str(), twp.c_str(), addr.c_str(), 1);
 	return employee;
 }
 
+// Função para imprimir o painel de TrocarRegistros
 void painelTrocarRegistros(int &posicao1, int &posicao2)
 {
 	cout << "Digite a posicao do primeiro registro: ";

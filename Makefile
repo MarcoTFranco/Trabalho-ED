@@ -13,16 +13,16 @@ CFLAGS = -c -std=c++14
 all: executavel
 
 #Linka arquivos compilados (objetos) ao executavel "executavel"
-executavel: main.o Employee.o
-	$(CC) main.o Employee.o -o executavel
+executavel: main.o Trabalhador.o
+	$(CC) main.o Trabalhador.o -o executavel
 
 #Compila main.cpp
 main.o: main.cpp
 	$(CC) $(CFLAGS) main.cpp
 
-#Compila Employee.cpp
-Bmais.o: Employee.cpp
-	$(CC) $(CFLAGS) Employee.cpp
+#Compila Trabalhador.cpp
+Bmais.o: Trabalhador.cpp
+	$(CC) $(CFLAGS) Trabalhador.cpp
 
 #Remove todos os arquivos compilados (objetos) e o executavel (executavel do projeto)
 clear:

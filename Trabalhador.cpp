@@ -3,11 +3,11 @@
 #include <cstring>
 #include <assert.h>
 
-#include "Employee.h"
+#include "Trabalhador.h"
 
 using namespace std;
 
-Employee::Employee(int dado0, float dado1, float dado2, const char *dado3, float dado4,
+Trabalhador::Trabalhador(int dado0, float dado1, float dado2, const char *dado3, float dado4,
                    const char *dado5, const char *dado6, const char *dado7, const char *dado8, int dado9)
 {
     id = dado0;
@@ -28,38 +28,39 @@ Employee::Employee(int dado0, float dado1, float dado2, const char *dado3, float
 };
 
 // Construtor padrao
-Employee::Employee(){};
+Trabalhador::Trabalhador(){
+};
 
 // Destrutor
-Employee::~Employee(){};
+Trabalhador::~Trabalhador(){};
 
 // Metodos para pegar id;
-int Employee::getId()
+int Trabalhador::getId()
 {
     return id;
 }
 
-bool Employee::operator<(const Employee &other) const
+bool Trabalhador::operator<(const Trabalhador &other) const
 {
     return id < other.id;
 }
 
 // Metodo para mudar title;
-void Employee::setTitle(const char *dado)
+void Trabalhador::setTitle(const char *dado)
 {
     assert(strlen(dado) < sizeof(title));
     strcpy(title, dado);
 }
 
 // Metodo para mudar timeStamp;
-void Employee::setTimeStamp(const char *dado)
+void Trabalhador::setTimeStamp(const char *dado)
 {
     assert(strlen(dado) < sizeof(timeStamp));
     strcpy(timeStamp, dado);
 }
 
 // Metodo para imprimir informacoes
-void Employee::imprimirInformacoes()
+void Trabalhador::imprimirInformacoes()
 {
     cout << "id: " << id << endl;
     cout << "lat: " << lat << endl;

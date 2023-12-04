@@ -13,10 +13,10 @@
 #include <cstring>
 #include <assert.h>
 
-#include "Employee.h"
-#include "ord.hpp"
+#include "Trabalhador.h"
+#include "ordenacao.hpp"
 #include "interface.hpp"
-#include "utils.hpp"
+#include "utilidades.hpp"
 
 using namespace std;
 
@@ -41,7 +41,7 @@ void lerArquivoCSV(string nomeDoArquivo)
 	string auxLinha;
 	string auxColuna;
 	string campos[10];
-	Employee employee;
+	Trabalhador employee;
 	int id, e;
 	float lat, lng, zip;
 	char desc[200], title[100],
@@ -58,7 +58,7 @@ void lerArquivoCSV(string nomeDoArquivo)
 			i++;
 		}
 
-		Employee employee;
+		Trabalhador employee;
 		stringstream streamId(campos[0]);
 		streamId >> id;
 		lat = stof(campos[1]);
@@ -76,8 +76,8 @@ void lerArquivoCSV(string nomeDoArquivo)
 		strcpy(addr, campos[8].c_str());
 		stringstream streamE(campos[9]);
 		streamE >> e;
-		employee = Employee(id, lat, lng, desc, zip, title, timeStamp, twp, addr, e);
-		gravaBinario.write(reinterpret_cast<char *>(&employee), sizeof(Employee));
+		employee = Trabalhador(id, lat, lng, desc, zip, title, timeStamp, twp, addr, e);
+		gravaBinario.write(reinterpret_cast<char *>(&employee), sizeof(Trabalhador));
 	}
 
 	arquivo.close();
@@ -93,9 +93,9 @@ void inserir(string nomeDoArquivo)
 		throw runtime_error("Erro ao abrir o arquivo.");
 	}
 
-	Employee employee(lerDadosDoEmployee(nomeDoArquivo));
+	Trabalhador employee(lerDadosDoEmployee(nomeDoArquivo));
 
-	arquivo.write(reinterpret_cast<char *>(&employee), sizeof(Employee));
+	arquivo.write(reinterpret_cast<char *>(&employee), sizeof(Trabalhador));
 
 	arquivo.close();
 }
@@ -123,7 +123,7 @@ void inserirNaPosicao(string nomeDoArquivo)
 		else
 		{
 			arquivo.seekg(0, ios::end);
-			numRegistros = arquivo.tellg() / sizeof(Employee);
+			numRegistros = arquivo.tellg() / sizeof(Trabalhador);
 
 			if (posicao >= numRegistros)
 			{
@@ -136,27 +136,27 @@ void inserirNaPosicao(string nomeDoArquivo)
 		}
 	} while (true);
 
-	Employee novoRegistro(lerDadosDoEmployee(nomeDoArquivo));
+	Trabalhador novoRegistro(lerDadosDoEmployee(nomeDoArquivo));
 
 	// Ler o registro existente na posição especificada
-	Employee registroExistente;
-	arquivo.seekg(posicao * sizeof(Employee));
-	arquivo.read(reinterpret_cast<char *>(&registroExistente), sizeof(Employee));
+	Trabalhador registroExistente;
+	arquivo.seekg(posicao * sizeof(Trabalhador));
+	arquivo.read(reinterpret_cast<char *>(&registroExistente), sizeof(Trabalhador));
 
 	// Deslocar os registros restantes para baixo
 	for (int i = numRegistros - 1; i >= posicao; i--)
 	{
-		Employee registroAnterior;
-		arquivo.seekg(i * sizeof(Employee));
-		arquivo.read(reinterpret_cast<char *>(&registroAnterior), sizeof(Employee));
+		Trabalhador registroAnterior;
+		arquivo.seekg(i * sizeof(Trabalhador));
+		arquivo.read(reinterpret_cast<char *>(&registroAnterior), sizeof(Trabalhador));
 
-		arquivo.seekp((i + 1) * sizeof(Employee));
-		arquivo.write(reinterpret_cast<char *>(&registroAnterior), sizeof(Employee));
+		arquivo.seekp((i + 1) * sizeof(Trabalhador));
+		arquivo.write(reinterpret_cast<char *>(&registroAnterior), sizeof(Trabalhador));
 	}
 
 	// Escrever o novo registro na posição especificada
-	arquivo.seekp(posicao * sizeof(Employee));
-	arquivo.write(reinterpret_cast<char *>(&novoRegistro), sizeof(Employee));
+	arquivo.seekp(posicao * sizeof(Trabalhador));
+	arquivo.write(reinterpret_cast<char *>(&novoRegistro), sizeof(Trabalhador));
 
 	arquivo.close();
 }
@@ -185,7 +185,7 @@ void trocarRegistros(string nomeDoArquivo)
 		else
 		{
 			arquivo.seekg(0, ios::end);
-			int numRegistros = arquivo.tellg() / sizeof(Employee);
+			int numRegistros = arquivo.tellg() / sizeof(Trabalhador);
 
 			if (posicao1 >= numRegistros || posicao2 >= numRegistros)
 			{
@@ -198,19 +198,19 @@ void trocarRegistros(string nomeDoArquivo)
 		}
 	} while (true);
 
-	Employee registro1, registro2;
+	Trabalhador registro1, registro2;
 
-	arquivo.seekg(posicao1 * sizeof(Employee));
-	arquivo.read(reinterpret_cast<char *>(&registro1), sizeof(Employee));
+	arquivo.seekg(posicao1 * sizeof(Trabalhador));
+	arquivo.read(reinterpret_cast<char *>(&registro1), sizeof(Trabalhador));
 
-	arquivo.seekg(posicao2 * sizeof(Employee));
-	arquivo.read(reinterpret_cast<char *>(&registro2), sizeof(Employee));
+	arquivo.seekg(posicao2 * sizeof(Trabalhador));
+	arquivo.read(reinterpret_cast<char *>(&registro2), sizeof(Trabalhador));
 
-	arquivo.seekp(posicao1 * sizeof(Employee));
-	arquivo.write(reinterpret_cast<char *>(&registro2), sizeof(Employee));
+	arquivo.seekp(posicao1 * sizeof(Trabalhador));
+	arquivo.write(reinterpret_cast<char *>(&registro2), sizeof(Trabalhador));
 
-	arquivo.seekp(posicao2 * sizeof(Employee));
-	arquivo.write(reinterpret_cast<char *>(&registro1), sizeof(Employee));
+	arquivo.seekp(posicao2 * sizeof(Trabalhador));
+	arquivo.write(reinterpret_cast<char *>(&registro1), sizeof(Trabalhador));
 
 	arquivo.close();
 }
@@ -226,10 +226,10 @@ void imprimirTrecho(string nomeDoArquivo)
 		throw runtime_error("Erro ao abrir o arquivo.");
 	}
 
-	Employee employee;
+	Trabalhador employee;
 
 	arquivo.seekg(0, ios::end);
-	int numRegistros = arquivo.tellg() / sizeof(Employee);
+	int numRegistros = arquivo.tellg() / sizeof(Trabalhador);
 
 	int comeco, fim;
 
@@ -237,7 +237,7 @@ void imprimirTrecho(string nomeDoArquivo)
 
 	int linha = 0;
 	arquivo.seekg(0, ios::beg);
-	while (arquivo.read((char *)&employee, sizeof(Employee)))
+	while (arquivo.read((char *)&employee, sizeof(Trabalhador)))
 	{
 		if (linha >= comeco and linha <= fim)
 		{
@@ -261,14 +261,14 @@ void editar(string nomeDoArquivo)
 	int id;
 	string titleS, timeStampS;
 	char title[100], timeStamp[100];
-	Employee employee;
+	Trabalhador employee;
 
 	painelEditar(id, titleS, timeStampS);
 
 	int posicao = buscarPosicaoPorId(nomeDoArquivo, id);
 
-	arquivo.seekg(posicao * sizeof(Employee), ios::beg);
-	arquivo.read((char *)&employee, sizeof(Employee));
+	arquivo.seekg(posicao * sizeof(Trabalhador), ios::beg);
+	arquivo.read((char *)&employee, sizeof(Trabalhador));
 
 	assert(titleS.length() < sizeof(title));
 	strcpy(title, titleS.c_str());
@@ -280,8 +280,8 @@ void editar(string nomeDoArquivo)
 
 	if (posicao != -1)
 	{
-		arquivo.seekp(posicao * sizeof(Employee), ios::beg);
-		arquivo.write((char *)&employee, sizeof(Employee));
+		arquivo.seekp(posicao * sizeof(Trabalhador), ios::beg);
+		arquivo.write((char *)&employee, sizeof(Trabalhador));
 	}
 	arquivo.close();
 }
@@ -296,9 +296,9 @@ void imprimeTudo(string nomeDoArquivo)
 		throw runtime_error("Erro ao abrir o arquivo.");
 	}
 
-	Employee data;
+	Trabalhador data;
 	leitura.seekg(0, ios::beg);
-	while (leitura.read(reinterpret_cast<char *>(&data), sizeof(Employee)))
+	while (leitura.read(reinterpret_cast<char *>(&data), sizeof(Trabalhador)))
 	{
 		data.imprimirInformacoes();
 	}
